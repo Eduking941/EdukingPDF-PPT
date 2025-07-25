@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>16:9 Háttér</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: rgb(30, 30, 30);
+      color: rgb(255, 255, 255);
+      font-family: "Times New Roman", serif;
+      padding: 4pt;
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding-right: 25%;
+    }
+    p.header {
+      font-size: 30pt;
+      margin: 20px 0 0 0;
+      opacity: 0;
+        transition: opacity 0.5s ease, font-size 0.5s ease;
+      pointer-events: none;
+    }
+    p.header.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .highlight-green {
+      background-color: rgb(50, 205, 50);
+    }
+    .highlight-orange {
+      background-color: rgb(255, 165, 0);
+    }
+    .highlight-red {
+      background-color: rgb(255, 0, 0);
+    }
+    .data1-result, .data2-result, .data3-result {
+      color: rgb(50, 205, 50);
+    }
+    .relation1-result, .relation2-result, .relation3-result {
+      color: rgb(255, 165, 0);
+    }
+    .question1-result, .question2-result, .question3-result {
+      color: rgb(255, 0, 0);
+    }
+    ul.task-list {
+      font-size: 30pt;
+      color: rgb(0, 128, 255);
+      margin: 10px 0 0 0;
+      padding-left: 40px;
+      list-style-type: disc;
+      align-self: flex-start;
+      text-align: left;
+    }
+    ul.task-list li {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    ul.task-list li.visible {
+      opacity: 1;
+    }
+    p.result {
+      font-size: 30pt;
+      margin: 10px 0 0 0;
+      text-align: left;
+      opacity: 0;
+        transition: opacity 0.5s ease, font-size 0.5s ease;
+      pointer-events: none;
+    }
+    p.result.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .separator {
+      width: 100%;
+      border-bottom: 4pt solid rgb(255, 255, 255);
+      margin-top: 10px;
+      box-sizing: border-box;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .separator.visible {
+      opacity: 1;
+    }
+    .plan-steps {
+      width: 100%;
+    }
+    .plan-steps p.result {
+      text-align: center;
+    }
+    .header.small-text,
+    p.result.small-text {
+      font-size: 12pt;
+    }
+    .results {
+      align-self: flex-start;
+      width: 100%;
+    }
+    .info-box {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 25%;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      background-color: rgb(40, 40, 40);
+    }
+    .ratio-wrapper {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .ratio-box {
+      width: 100%;
+      height: auto;
+      max-width: 100vw;
+      max-height: 100vh;
+      aspect-ratio: 16 / 9;
+      background-color: rgb(30, 30, 30);
+    }
+  </style>
+</head>
+<body>
+  <p class="header">Ide kerül a feladat szövege, amely tartalmazza az <span class="data1">adat 1</span>, <span class="data2">adat 2</span>, <span class="data3">adat 3</span>-at, tartalmazza az <span class="relation1">összefüggés 1</span>, <span class="relation2">összefüggés 2</span>, <span class="relation3">összefüggés 3</span>-at, és tartalmazza a feladat <span class="question1">kérdés 1</span>, <span class="question2">kérdés 2</span>, <span class="question3">kérdés 3</span>-at.</p>
+  <div class="info-box">
+    <ul class="task-list">
+      <li class="task1">az adatok kinyerése a szövegből</li>
+      <li class="task2">az összefüggések kikeresése a szövegből</li>
+      <li class="task3">a kérdések megfogalmazása</li>
+      <li class="task4">a megoldás megtervezése</li>
+      <li class="task5">végrehajtjuk a megoldás lépéseit</li>
+      <li class="task6">a válasz írása</li>
+    </ul>
+  </div>
+  <div class="results">
+    <p class="result data1-result">adat 1</p>
+    <p class="result data2-result">adat 2</p>
+    <p class="result data3-result">adat 3</p>
+    <p class="result relation1-result">összefüggés 1</p>
+    <p class="result relation2-result">összefüggés 2</p>
+    <p class="result relation3-result">összefüggés 3</p>
+    <p class="result question1-result">kérdés 1</p>
+    <p class="result question2-result">kérdés 2</p>
+    <p class="result question3-result">kérdés 3</p>
+    <div class="separator"></div>
+    <div class="plan-steps">
+      <p class="result plan-result">a megoldás terve</p>
+      <p class="result step1-result">a megoldás első lépése</p>
+      <p class="result step2-result">a megoldás második lépése</p>
+      <p class="result step3-result">a megoldás harmadik lépése</p>
+      <p class="result step4-result">a megoldás negyedik lépése</p>
+      <p class="result step5-result">a megoldás ötödik lépése</p>
+      <p class="result step6-result">a megoldás hatodik lépése</p>
+      <p class="result step7-result">a megoldás hetedik lépése</p>
+      <p class="result step8-result">a megoldás nyolcadik lépése</p>
+      <p class="result step9-result">a megoldás kilencedik lépése</p>
+      <p class="result step10-result">a megoldás tizedik lépése</p>
+      <p class="result answer-result" style="color: rgb(50, 205, 50);">A feladat kérdésére a válasz: a következő</p>
+    </div>
+  </div>
+  <div class="ratio-wrapper">
+    <div class="ratio-box"></div>
+  </div>
+  <script>
+    const header = document.querySelector('.header');
+    const data1 = document.querySelector('.data1');
+    const data2 = document.querySelector('.data2');
+    const data3 = document.querySelector('.data3');
+    const infoBox = document.querySelector('.info-box');
+    const result1 = document.querySelector('.data1-result');
+    const result2 = document.querySelector('.data2-result');
+    const result3 = document.querySelector('.data3-result');
+    const relation1 = document.querySelector('.relation1');
+    const relation2 = document.querySelector('.relation2');
+    const relation3 = document.querySelector('.relation3');
+    const relResult1 = document.querySelector('.relation1-result');
+    const relResult2 = document.querySelector('.relation2-result');
+    const relResult3 = document.querySelector('.relation3-result');
+    const task1 = document.querySelector('.task1');
+    const task2 = document.querySelector('.task2');
+    const task3 = document.querySelector('.task3');
+    const task4 = document.querySelector('.task4');
+    const task5 = document.querySelector('.task5');
+    const task6 = document.querySelector('.task6');
+    const question1 = document.querySelector('.question1');
+    const question2 = document.querySelector('.question2');
+    const question3 = document.querySelector('.question3');
+    const qResult1 = document.querySelector('.question1-result');
+    const qResult2 = document.querySelector('.question2-result');
+    const qResult3 = document.querySelector('.question3-result');
+    const planResult = document.querySelector('.plan-result');
+    const step1Result = document.querySelector('.step1-result');
+    const step2Result = document.querySelector('.step2-result');
+    const step3Result = document.querySelector('.step3-result');
+    const step4Result = document.querySelector('.step4-result');
+    const step5Result = document.querySelector('.step5-result');
+    const step6Result = document.querySelector('.step6-result');
+    const step7Result = document.querySelector('.step7-result');
+    const step8Result = document.querySelector('.step8-result');
+    const step9Result = document.querySelector('.step9-result');
+    const step10Result = document.querySelector('.step10-result');
+    const answerResult = document.querySelector('.answer-result');
+    const separator = document.querySelector('.separator');
+    const results = document.querySelectorAll(
+      '.result:not(.plan-result):not(.step1-result):not(.step2-result):not(.step3-result):not(.step4-result):not(.step5-result):not(.step6-result):not(.step7-result):not(.step8-result):not(.step9-result):not(.step10-result):not(.answer-result)'
+    );
+
+    function adjustInfoBox() {
+      infoBox.style.top = header.offsetTop + 'px';
+    }
+    adjustInfoBox();
+    window.addEventListener('resize', adjustInfoBox);
+    function fadeInAfterSizeChange(el, flag) {
+      if (flag) {
+        el.classList.remove("visible");
+        void el.offsetWidth;
+        el.classList.add("visible");
+      }
+    }
+    let step = 0;
+
+    function applyStep() {
+      header.classList.toggle('visible', step >= 1);
+      const showTask1 = step >= 2;
+      const highlight1 = step >= 3;
+      const showRes1 = step >= 4;
+      const highlight2 = step >= 5;
+      const showRes2 = step >= 6;
+      const highlight3 = step >= 7;
+      const showRes3 = step >= 8;
+      const showTask2 = step >= 9;
+      const highlightR1 = step >= 10;
+      const showRel1 = step >= 11;
+      const highlightR2 = step >= 12;
+      const showRel2 = step >= 13;
+      const highlightR3 = step >= 14;
+      const showRel3 = step >= 15;
+      const showTask3 = step >= 16;
+      const highlightQ1 = step >= 17;
+      const showQ1 = step >= 18;
+      const highlightQ2 = step >= 19;
+      const showQ2 = step >= 20;
+      const highlightQ3 = step >= 21;
+      const showQ3 = step >= 22;
+      const reduceSize = step >= 23;
+      const showTask4 = step >= 24;
+      const showPlan = step >= 25;
+      const shrinkPlan = step >= 26;
+      const showTask5 = step >= 27;
+      const showStep1 = step >= 28;
+      const shrinkStep1 = step >= 29;
+      const showStep2 = step >= 30;
+      const shrinkStep2 = step >= 31;
+      const showStep3 = step >= 32;
+      const shrinkStep3 = step >= 33;
+      const showStep4 = step >= 34;
+      const shrinkStep4 = step >= 35;
+      const showStep5Res = step >= 36;
+      const shrinkStep5Res = step >= 37;
+      const showStep6Res = step >= 38;
+      const shrinkStep6Res = step >= 39;
+      const showStep7Res = step >= 40;
+      const shrinkStep7Res = step >= 41;
+      const showStep8Res = step >= 42;
+      const shrinkStep8Res = step >= 43;
+      const showStep9Res = step >= 44;
+      const shrinkStep9Res = step >= 45;
+      const showStep10Res = step >= 46;
+      const shrinkStep10Res = step >= 47;
+      const showTask6 = step >= 48;
+      const showAnswer = step >= 49;
+      task1.classList.toggle("visible", showTask1);
+      task2.classList.toggle("visible", showTask2);
+      task3.classList.toggle("visible", showTask3);
+      task4.classList.toggle("visible", showTask4);
+      task5.classList.toggle("visible", showTask5);
+      task6.classList.toggle("visible", showTask6);
+      planResult.classList.toggle("visible", showPlan);
+      planResult.classList.toggle("small-text", shrinkPlan);
+      fadeInAfterSizeChange(planResult, shrinkPlan);
+      step1Result.classList.toggle("visible", showStep1);
+      step1Result.classList.toggle("small-text", shrinkStep1);
+      fadeInAfterSizeChange(step1Result, shrinkStep1);
+      step2Result.classList.toggle("visible", showStep2);
+      step2Result.classList.toggle("small-text", shrinkStep2);
+      fadeInAfterSizeChange(step2Result, shrinkStep2);
+      step3Result.classList.toggle("visible", showStep3);
+      step3Result.classList.toggle("small-text", shrinkStep3);
+      fadeInAfterSizeChange(step3Result, shrinkStep3);
+      step4Result.classList.toggle("visible", showStep4);
+      step4Result.classList.toggle("small-text", shrinkStep4);
+      fadeInAfterSizeChange(step4Result, shrinkStep4);
+      step5Result.classList.toggle("visible", showStep5Res);
+      step5Result.classList.toggle("small-text", shrinkStep5Res);
+      fadeInAfterSizeChange(step5Result, shrinkStep5Res);
+      step6Result.classList.toggle("visible", showStep6Res);
+      step6Result.classList.toggle("small-text", shrinkStep6Res);
+      fadeInAfterSizeChange(step6Result, shrinkStep6Res);
+      step7Result.classList.toggle("visible", showStep7Res);
+      step7Result.classList.toggle("small-text", shrinkStep7Res);
+      fadeInAfterSizeChange(step7Result, shrinkStep7Res);
+      step8Result.classList.toggle("visible", showStep8Res);
+      step8Result.classList.toggle("small-text", shrinkStep8Res);
+      fadeInAfterSizeChange(step8Result, shrinkStep8Res);
+      step9Result.classList.toggle("visible", showStep9Res);
+      step9Result.classList.toggle("small-text", shrinkStep9Res);
+      fadeInAfterSizeChange(step9Result, shrinkStep9Res);
+      step10Result.classList.toggle("visible", showStep10Res);
+      step10Result.classList.toggle("small-text", shrinkStep10Res);
+      fadeInAfterSizeChange(step10Result, shrinkStep10Res);
+      answerResult.classList.toggle("visible", showAnswer);
+      data1.classList.toggle("highlight-green", highlight1);
+      result1.classList.toggle("visible", showRes1);
+      data2.classList.toggle("highlight-green", highlight2);
+      result2.classList.toggle("visible", showRes2);
+      data3.classList.toggle("highlight-green", highlight3);
+      result3.classList.toggle("visible", showRes3);
+      relation1.classList.toggle("highlight-orange", highlightR1);
+      relResult1.classList.toggle("visible", showRel1);
+      relation2.classList.toggle("highlight-orange", highlightR2);
+      relResult2.classList.toggle("visible", showRel2);
+      relation3.classList.toggle("highlight-orange", highlightR3);
+      relResult3.classList.toggle("visible", showRel3);
+      question1.classList.toggle("highlight-red", highlightQ1);
+      qResult1.classList.toggle("visible", showQ1);
+      question2.classList.toggle("highlight-red", highlightQ2);
+      qResult2.classList.toggle("visible", showQ2);
+      question3.classList.toggle("highlight-red", highlightQ3);
+      qResult3.classList.toggle("visible", showQ3);
+      header.classList.toggle("small-text", reduceSize);
+      fadeInAfterSizeChange(header, reduceSize);
+      results.forEach(r => r.classList.toggle("small-text", reduceSize));
+      results.forEach(r => fadeInAfterSizeChange(r, reduceSize));
+      separator.classList.toggle("visible", reduceSize);
+
+
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        step = Math.min(step + 1, 49);
+        applyStep();
+      } else if (e.key === 'ArrowLeft') {
+        step = Math.max(step - 1, 0);
+        applyStep();
+      }
+    });
+  </script>
+</body>
+</html>
