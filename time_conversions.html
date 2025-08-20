@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Időegységek átváltása</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:rgb(30,30,30);color:rgb(255,255,255);font-family:"Times New Roman",serif;padding-top:160pt;box-sizing:border-box;}
+  .line{position:absolute;top:50%;left:0;width:100%;border-top:4pt solid white;}
+  #top{position:absolute;left:0;right:0;bottom:50%;overflow:hidden;}
+  #lines{position:absolute;left:0;right:0;bottom:0;}
+  #bottom{position:absolute;left:0;right:0;top:calc(50% + 4pt);bottom:0;display:flex;justify-content:center;align-items:flex-end;padding:10px;box-sizing:border-box;}
+  .step{font-size:18pt;margin:0;opacity:0;transition:opacity 0.5s ease;}
+  .step.visible{opacity:1;}
+  #stairs{position:relative;width:480px;height:480px;}
+  .tstep{position:absolute;width:80px;height:80px;border:2px solid white;display:flex;justify-content:center;align-items:center;font-size:24px;}
+  .s1{left:0;bottom:0;}
+  .s2{left:80px;bottom:80px;}
+  .s3{left:160px;bottom:160px;}
+  .s4{left:240px;bottom:240px;}
+  .s5{left:320px;bottom:320px;}
+  .s6{left:400px;bottom:400px;}
+  #edu{position:absolute;width:120px;height:auto;transition:all 0.5s ease;left:0;bottom:0;}
+  .small #stairs{transform:scale(0.5);transform-origin:bottom right;}
+  .small #edu{transform:scale(1.5);transform-origin:bottom left;}
+  #arrows{position:absolute;left:calc(100% + 40px);bottom:-80px;display:flex;flex-direction:column;gap:6px;font-size:80px;color:rgb(0,128,255);transform-origin:top left;transform:rotate(45deg);opacity:0;transition:opacity 0.5s ease;}
+  #arrowText{position:absolute;left:calc(100% + 40px);bottom:-170px;color:rgb(0,128,255);font-size:24px;opacity:0;transition:opacity 0.5s ease;}
+  #arrowText.visible{opacity:1;}
+  #arrows.visible{opacity:1;}
+  #arrows .arrow{opacity:0;transition:opacity 0.5s ease;}
+  #arrows .arrow.visible{opacity:1;}
+  .green{color:rgb(50,205,50);}
+  .red{color:rgb(235,0,0);}
+  .orange{color:rgb(255,165,0);}
+  .blue{color:rgb(0,128,255);}
+</style>
+</head>
+<body>
+<div id="top">
+  <div id="lines"></div>
+</div>
+<div class="line"></div>
+<div id="bottom">
+  <div id="stairs">
+    <img id="edu" src="https://raw.githubusercontent.com/Eduking941/EdukingPDF-PPT/9ec1848a112d31ee765395a7a82573be4fc43dc7/Edu_%C3%A1tl%C3%A1tsz%C3%B3_h%C3%A1tt%C3%A9r.svg" alt="Edu">
+  </div>
+  <div id="arrows">
+    <div class="arrow up">↑ :</div>
+    <div class="arrow down">↓ &middot;</div>
+  </div>
+  <div id="arrowText">felfelé: osztás<br>lefelé: szorzás</div>
+</div>
+<script>
+const edu=document.getElementById('edu');
+const stairs=document.getElementById('stairs');
+const arrows=document.getElementById('arrows');
+const up=arrows.querySelector('.up');
+const down=arrows.querySelector('.down');
+const arrowText=document.getElementById('arrowText');
+let positions=[];
+let pos=0;
+const names=["mp","perc","óra","nap","hét","év"];
+stairs.style.width=names.length*80+"px";
+stairs.style.height=names.length*80+"px";
+const scaleFactor=0.5;
+const arrowScale=parseInt(stairs.style.height)*scaleFactor/320;
+arrows.style.transform=`rotate(45deg) scale(${arrowScale})`;
+positions=names.map((_,i)=>({l:i*80,b:(i+1)*80}));
+names.forEach((n,i)=>{const div=document.createElement('div');div.className='tstep s'+(i+1);div.textContent=n;stairs.appendChild(div);});
+function place(){edu.style.left=positions[pos].l+'px';edu.style.bottom=positions[pos].b+'px';}
+place();
+function moveTo(i){pos=Math.max(0,Math.min(i,positions.length-1));place();}
+const linesBox=document.getElementById('lines');
+const topBox=document.getElementById('top');
+const lineEls=[];
+const texts=[
+  '<b><span class="green">4 óra</span> hány <span class="red">másodperc</span>?</b>',
+  '<span class="blue">Lépjünk lefelé: óra → perc → másodperc.</span>',
+  '<span class="orange">1 óra = 60 perc</span>',
+  '<span class="orange">1 perc = 60 másodperc</span>',
+  '<span class="blue">Átlépett váltószám: <span class="orange">60</span> · <span class="orange">60</span> = <span class="orange">3600</span></span>',
+  '<span class="green">4</span> × <span class="orange">60</span> × <span class="orange">60</span> = <span class="green">14&nbsp;400</span> <span class="red">másodperc</span>',
+  '<b>Válasz: <span class="green">14&nbsp;400</span> <span class="red">másodperc</span></b>',
+  '<b><span class="green">2 nap</span> hány <span class="red">perc</span>?</b>',
+  '<span class="blue">Lépjünk lefelé: nap → óra → perc.</span>',
+  '<span class="orange">1 nap = 24 óra</span>',
+  '<span class="orange">1 óra = 60 perc</span>',
+  '<span class="blue">Átlépett váltószám: <span class="orange">24</span> · <span class="orange">60</span> = <span class="orange">1440</span></span>',
+  '<span class="green">2</span> × <span class="orange">24</span> × <span class="orange">60</span> = <span class="green">2880</span> <span class="red">perc</span>',
+  '<b>Válasz: <span class="green">2880</span> <span class="red">perc</span></b>',
+  '<b><span class="green">5 perc</span> hány <span class="red">másodperc</span>?</b>',
+  '<span class="blue">Lépjünk lefelé: perc → másodperc.</span>',
+  '<span class="orange">1 perc = 60 másodperc</span>',
+  '<span class="blue">Átlépett váltószám: <span class="orange">60</span></span>',
+  '<span class="green">5</span> × <span class="orange">60</span> = <span class="green">300</span> <span class="red">másodperc</span>',
+  '<b>Válasz: <span class="green">300</span> <span class="red">másodperc</span></b>'
+];
+let step=1;
+function addLine(text){
+  lineEls.forEach((p,i)=>{
+    let size=parseInt(p.dataset.size)-2;
+    p.dataset.size=size;
+    p.style.fontSize=size+'pt';
+    let bottom=parseFloat(p.style.bottom)+24;
+    p.style.bottom=bottom+'pt';
+    if(bottom>topBox.clientHeight||size<=8){p.remove();lineEls.splice(i,1);i--;}
+  });
+  const p=document.createElement('p');
+  p.className='step';
+  p.dataset.size=18;
+  p.style.bottom='4pt';
+  p.style.fontSize='18pt';
+  p.innerHTML=text;
+  linesBox.appendChild(p);
+  lineEls.push(p);
+  requestAnimationFrame(()=>p.classList.add('visible'));
+}
+function apply(){
+  let current=lineEls.length;
+  if(step>current){
+    for(let i=current;i<step;i++) addLine(texts[i]);
+  }else if(step<current){
+    for(let i=current;i>step;i--){const p=lineEls.pop();if(p)p.remove();}
+  }
+  edu.style.opacity=step>=1?1:0;
+  stairs.style.opacity=step>=1?1:0;
+  document.body.classList.toggle('small',step>=1);
+  arrows.classList.toggle('visible',step>=1);
+  arrowText.classList.toggle('visible',step>=1);
+  up.classList.toggle('visible',step>=1);
+  down.classList.toggle('visible',step>=1);
+  if(step===1) moveTo(2);
+  if(step===3) moveTo(1);
+  if(step===4) moveTo(0);
+  if(step===8) moveTo(3);
+  if(step===10) moveTo(2);
+  if(step===11) moveTo(1);
+  if(step===15) moveTo(1);
+  if(step===17) moveTo(0);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'){step=Math.min(step+1,texts.length);apply();}
+  else if(e.key==='ArrowLeft'){step=Math.max(step-1,0);apply();}
+});
+apply();
+</script>
+</body>
+</html>
