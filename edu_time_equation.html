@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Időlépcső - Egyenlet megoldás</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:rgb(30,30,30);color:rgb(255,255,255);font-family:"Times New Roman",serif;padding-top:160pt;box-sizing:border-box;}
+  .line{position:absolute;top:50%;left:0;width:100%;border-top:4pt solid white;}
+  #top{position:absolute;left:0;right:0;bottom:50%;overflow:hidden;}
+  #lines{position:absolute;left:0;right:0;bottom:0;}
+  #bottom{position:absolute;left:0;right:0;top:calc(50% + 4pt);bottom:0;display:flex;justify-content:center;align-items:flex-end;padding:10px;box-sizing:border-box;transform:scale(1.2);transform-origin:bottom center;}
+  .step{font-size:30pt;margin:0;opacity:0;transition:opacity 0.5s ease;}
+  .step.visible{opacity:1;}
+  #stairs{position:relative;width:480px;height:480px;}
+  .tstep{position:absolute;width:80px;height:80px;border:2px solid white;display:flex;justify-content:center;align-items:center;font-size:24px;}
+  .s1{left:0;bottom:0;}
+  .s2{left:80px;bottom:80px;}
+  .s3{left:160px;bottom:160px;}
+  .s4{left:240px;bottom:240px;}
+  .s5{left:320px;bottom:320px;}
+  #edu{position:absolute;width:100px;height:auto;transition:all 0.5s ease;left:0;bottom:0;}
+  .small #stairs{transform:scale(0.7);transform-origin:bottom right;}
+  .small #edu{transform:scale(0.5);transform-origin:bottom left;}
+  #arrows{
+    position:absolute;
+    left:calc(100% + 40px);
+    bottom:-80px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:80px;
+    color:rgb(0,128,255);
+    transform-origin:top left;
+    transform:rotate(45deg);
+    opacity:0;
+    transition:opacity 0.5s ease;
+  }
+  #arrows.visible{opacity:1;}
+  #arrows .arrow{opacity:0;transition:opacity 0.5s ease;}
+  #arrows .arrow.visible{opacity:1;}
+</style>
+</head>
+<body>
+<div id="top">
+  <div id="lines">
+    <p class="step"><b>Oldjuk meg a következő egyenletet!</b></p>
+    <p class="step">x + 17 = 35</p>
+    <p class="step"><b>Az egyenlet megoldásának lépései</b></p>
+    <p class="step">1. lépés: Kivonással rendezzük az egyenletet</p>
+    <p class="step">x + 17 = 35 − 17</p>
+    <p class="step">x + 17 - 17 = 35 - 17</p>
+    <p class="step">2. lépés: Egyszerűsítjük az egyenletet</p>
+    <p class="step">x = 18</p>
+    <p class="step">3. lépés: Ellenőrzés</p>
+    <p class="step">18 + 17 = 35 ✓ igaz</p>
+  </div>
+</div>
+<div class="line"></div>
+<div id="bottom">
+  <div id="stairs">
+    <img id="edu" src="https://raw.githubusercontent.com/Eduking941/EdukingPDF-PPT/9ec1848a112d31ee765395a7a82573be4fc43dc7/Edu_%C3%A1tl%C3%A1tsz%C3%B3_h%C3%A1tt%C3%A9r.svg" alt="Edu">
+  </div>
+  <div id="arrows">
+    <div class="arrow up">↑ :</div>
+    <div class="arrow down">↓ &middot;</div>
+  </div>
+</div>
+<script>
+const edu=document.getElementById('edu');
+const stairs=document.getElementById('stairs');
+const arrows=document.getElementById('arrows');
+const up=arrows.querySelector('.up');
+const down=arrows.querySelector('.down');
+let positions=[];
+let pos=0; // index for Edu position
+const lines=Array.from(document.querySelectorAll('#lines .step'));
+let step=1;
+function place(){
+  if(positions[pos]){
+    edu.style.left=positions[pos].l+'px';
+    edu.style.bottom=positions[pos].b+'px';
+  }
+}
+function moveTo(i){
+  pos=Math.max(0,Math.min(i,positions.length-1));
+  place();
+}
+// Load step names from external file and build the staircase dynamically
+const names=["mp","perc","óra","nap","hét","év"];
+stairs.style.width = names.length*80 + 'px';
+stairs.style.height = names.length*80 + 'px';
+// Scale the arrows to half the usual size relative to the staircase height
+const arrowScale = parseInt(stairs.style.height) / 320;
+arrows.style.transform = `rotate(45deg) scale(${arrowScale})`;
+positions = names.map((_,i)=>({l:i*80,b:(i+1)*80}));
+names.forEach((n,i)=>{
+  const div=document.createElement("div");
+  div.className="tstep s"+(i+1);
+  div.textContent=n;
+  stairs.appendChild(div);
+});
+place();
+function apply(){
+  lines.forEach((el,i)=>{
+    if(i < step){
+      el.style.bottom = (4 + i*34)+'pt';
+      el.classList.add('visible');
+    } else {
+      el.classList.remove('visible');
+    }
+  });
+  if(step>=1) edu.style.opacity=1; else edu.style.opacity=0;
+  if(step>=2) stairs.style.opacity=1; else stairs.style.opacity=0;
+  if(step>=3) document.body.classList.add('small');
+  else document.body.classList.remove('small');
+  arrows.classList.toggle('visible', step>=3);
+  up.classList.toggle('visible', step>=3);
+  down.classList.toggle('visible', step>=4);
+  if(step===4) moveTo(0);
+  if(step===5) moveTo(1);
+  if(step===6) moveTo(2);
+  if(step===7) moveTo(3);
+  if(step===8) moveTo(2);
+  if(step===9) moveTo(1);
+  if(step===10) moveTo(0);
+  if(step>=11){
+    let p = Math.min(positions.length-1, step-11);
+    moveTo(p);
+  }
+}
+document.addEventListener('keydown',e=>{
+  const max=lines.length;
+  if(e.key==='ArrowRight'){step=Math.min(step+1,max);apply();}
+  else if(e.key==='ArrowLeft'){step=Math.max(step-1,0);apply();}
+});
+apply();
+</script>
+</body>
+</html>
