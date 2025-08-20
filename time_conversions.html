@@ -6,7 +6,7 @@
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:rgb(30,30,30);color:rgb(255,255,255);font-family:"Times New Roman",serif;padding-top:160pt;box-sizing:border-box;}
   .line{position:absolute;top:50%;left:0;width:100%;border-top:4pt solid white;}
-  #top{position:absolute;left:0;right:0;bottom:50%;overflow:hidden;}
+  #top{position:absolute;left:0;right:0;top:0;bottom:50%;overflow:hidden;}
   #lines{position:absolute;left:0;right:0;bottom:0;}
   #bottom{position:absolute;left:0;right:0;top:calc(50% + 4pt);bottom:0;display:flex;justify-content:center;align-items:flex-end;padding:10px;box-sizing:border-box;}
   .step{font-size:18pt;margin:0;opacity:0;transition:opacity 0.5s ease;}
@@ -21,9 +21,9 @@
   .s6{left:400px;bottom:400px;}
   #edu{position:absolute;width:120px;height:auto;transition:all 0.5s ease;left:0;bottom:0;}
   .small #stairs{transform:scale(0.5);transform-origin:bottom right;}
-  .small #edu{transform:scale(1.5);transform-origin:bottom left;}
+  .small #edu{transform:scale(2.25);transform-origin:bottom left;}
   #arrows{position:absolute;left:calc(100% + 40px);bottom:-80px;display:flex;flex-direction:column;gap:6px;font-size:80px;color:rgb(0,128,255);transform-origin:top left;transform:rotate(45deg);opacity:0;transition:opacity 0.5s ease;}
-  #arrowText{position:absolute;left:calc(100% + 40px);bottom:-170px;color:rgb(0,128,255);font-size:24px;opacity:0;transition:opacity 0.5s ease;}
+  #arrowText{position:absolute;left:calc(100% - 160px);bottom:-170px;color:rgb(0,128,255);font-size:24px;opacity:0;transition:opacity 0.5s ease;}
   #arrowText.visible{opacity:1;}
   #arrows.visible{opacity:1;}
   #arrows .arrow{opacity:0;transition:opacity 0.5s ease;}
