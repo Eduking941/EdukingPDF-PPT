@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage[margin=2cm]{geometry}
+\pagecolor[rgb]{0.12,0.12,0.12}
+\color{white}
+
+\begin{document}
+\begin{center}
+\begin{tikzpicture}[scale=1.2]
+
+% Színek
+\definecolor{halvanyszurke}{rgb}{0.7,0.7,0.7}
+
+% Lépcsőfokok és feliratok (balról jobbra, emelkedve)
+\foreach \i/\label/\szin in {
+  0/mg/white,
+  1/cg/white,
+  2/dg/white,
+  3/g/white,
+  4/dag/white,
+  5/hg/halvanyszurke,
+  6/kg/white,
+  7//white,       % Üres mező – megagramm helye
+  8/q/white,
+  9/t/white,
+} {
+  \draw[thick, color=white] (\i,\i) rectangle (\i+1,\i+1);
+  \ifx\label\empty
+    % Ne írj semmit
+  \else
+    \node[text=\szin] at (\i+0.5,\i+0.5) {\textbf{\label}};
+  \fi
+}
+
+% Felső nyíl – osztunk 10-zel
+\draw[->, thick, color=cyan, line width=4pt] (0.5,10.5) -- (8.5,10.5);
+\node[text=cyan] at (4.5,10.9) {\textbf{osztunk 10-zel}};
+
+% Alsó nyíl – szorzunk 10-zel
+\draw[<-, thick, color=cyan, line width=4pt] (0.5,-0.5) -- (8.5,-0.5);
+\node[text=cyan] at (4.5,-0.9) {\textbf{szorzunk 10-zel}};
+
+\end{tikzpicture}
+\end{center}
+\end{document}
