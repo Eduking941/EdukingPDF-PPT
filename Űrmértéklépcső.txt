@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage[margin=2cm]{geometry}
+\pagecolor[rgb]{0.12,0.12,0.12}
+\color{white}
+
+\begin{document}
+\begin{center}
+\begin{tikzpicture}[scale=1.2]
+
+% Színek – halványszürke
+\definecolor{halvanyszurke}{rgb}{0.8,0.8,0.8}
+
+% Lépcsőfokok fehérrel
+\foreach \i/\label in {
+  0/ml,
+  1/cl,
+  2/dl,
+  3/l,
+  5/hl
+} {
+  \draw[thick, color=white] (\i,\i) rectangle (\i+1,\i+1);
+  \node[text=white] at (\i+0.5,\i+0.5) {\textbf{\label}};
+}
+
+% DAL – szürke
+\draw[thick, color=white] (4,4) rectangle (5,5);
+\node[text=halvanyszurke] at (4.5,4.5) {\textbf{dal}};
+
+% KL – szürke
+\draw[thick, color=white] (6,6) rectangle (7,7);
+\node[text=halvanyszurke] at (6.5,6.5) {\textbf{kl}};
+
+% Felső nyíl – osztunk 10-zel
+\draw[->, thick, color=cyan, line width=4pt] (0.5,7.5) -- (5.5,7.5);
+\node[text=cyan] at (3,7.9) {\textbf{osztunk 10-zel}};
+
+% Alsó nyíl – szorzunk 10-zel
+\draw[<-, thick, color=cyan, line width=4pt] (0.5,-0.5) -- (5.5,-0.5);
+\node[text=cyan] at (3,-0.9) {\textbf{szorzunk 10-zel}};
+
+\end{tikzpicture}
+\end{center}
+\end{document}
