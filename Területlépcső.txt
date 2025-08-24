@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage[margin=2cm]{geometry}
+\pagecolor[rgb]{0.12,0.12,0.12}
+\color{white}
+
+\begin{document}
+\begin{center}
+\begin{tikzpicture}[scale=1.2]
+
+% Színek
+\definecolor{halvanyszurke}{rgb}{0.8,0.8,0.8}
+
+% Lépcsőfokok (balról jobbra, emelkedve)
+\foreach \i/\label/\szin in {
+  0/mm$^{2}$/white,
+  1/cm$^{2}$/white,
+  2/dm$^{2}$/white,
+  3/m$^{2}$/white,
+  4/a/halvanyszurke,
+  5/ha/halvanyszurke,
+  6/km$^{2}$/white,
+} {
+  \draw[thick, color=white] (\i,\i) rectangle (\i+1,\i+1);
+  \node[text=\szin] at (\i+0.5,\i+0.5) {\textbf{\label}};
+}
+
+% Felső nyíl – felfelé: osztunk 100-zal
+\draw[->, thick, color=cyan, line width=4pt] (0.5,8.5) -- (5.5,8.5);
+\node[text=cyan] at (3,8.9) {\textbf{osztunk 100-zal ($10^{2}$)}};
+
+% Alsó nyíl – lefelé: szorzunk 100-zal
+\draw[<-, thick, color=cyan, line width=4pt] (0.5,-0.5) -- (5.5,-0.5);
+\node[text=cyan] at (3,-0.9) {\textbf{szorzunk 100-zal ($10^{2}$)}};
+
+\end{tikzpicture}
+\end{center}
+\end{document}
