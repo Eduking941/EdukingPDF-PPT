@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Térfogatlépcső – lefelé</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      color: #fff;
+      font-family: "Times New Roman", serif;
+      }
+    #top {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    #bottom {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    #divider {
+      height: 4pt;
+      background: #fff;
+    }
+    #text-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    sup {
+      font-size: 0.6em;
+    }
+    .line {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      bottom: 0;
+      opacity: 0;
+      color: #fff;
+      transition: bottom 0.5s linear, font-size 0.5s linear, opacity 0.5s linear;
+    }
+    .adatkijeloles { color: rgb(50,205,50); }
+    .kerdeskijeloles { color: rgb(235,0,0); }
+    .osszefuggeskijeloles { color: rgb(255,165,0); }
+    .tartalomkek { color: rgb(0,128,255); }
+    .frac { display: inline-block; vertical-align: middle; text-align: center; }
+    .frac > span {
+      display: block;
+      padding: 0.1em 0.2em;
+    }
+    .frac .den { border-top: 1px solid currentColor; }
+  </style>
+</head>
+<body>
+  <div id="top">
+    <div id="text-container"></div>
+  </div>
+  <div id="divider"></div>
+  <div id="bottom"></div>
+  <script type="text/plain" id="fallback-lines" style="display:none;">
+1. feladat
+Egy akvárium térfogata <span class='adatkijeloles'>2,5 m<sup>3</sup></span>. <span class='kerdeskijeloles'>Hány dm<sup>3</sup> ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span> <span class='osszefuggeskijeloles'>m<sup>3</sup> → dm<sup>3</sup></span> (1 lépcső)
+<span class='tartalomkek'>Átlépett váltószámok:</span>
+<span class='osszefuggeskijeloles'>1000</span>
+<span class='osszefuggeskijeloles'>10<sup>3</sup></span>
+2,5 · 1000 = <span class='adatkijeloles'>2&nbsp;500 dm<sup>3</sup></span>
+<span class='tartalomkek'>Magyarázat: egy lefelé lépésnél ezerszeresére nő az érték.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>3</sup>=1&nbsp;000.</span>
+<span class='tartalomkek'>Hatványazonosság: 10<sup>3</sup>=10<sup>3</sup>.</span>
+Válasz: <span class='adatkijeloles'>2&nbsp;500 dm<sup>3</sup></span>
+
+2. feladat
+Egy tartály térfogata <span class='adatkijeloles'><span class='frac'><span class='num'>1</span><span class='den'>2</span></span> m<sup>3</sup></span>. <span class='kerdeskijeloles'>Hány cm<sup>3</sup> ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span> <span class='osszefuggeskijeloles'>m<sup>3</sup> → dm<sup>3</sup> → cm<sup>3</sup></span> (2 lépcső)
+<span class='tartalomkek'>Átlépett váltószámok:</span>
+<span class='osszefuggeskijeloles'>1000 · 1000 = 1&nbsp;000&nbsp;000</span>
+<span class='osszefuggeskijeloles'>10<sup>3</sup> · 10<sup>3</sup> = 10<sup>6</sup></span>
+<span class='frac'><span class='num'>1</span><span class='den'>2</span></span> · 1&nbsp;000&nbsp;000 = <span class='adatkijeloles'>500&nbsp;000 cm<sup>3</sup></span>
+<span class='tartalomkek'>Magyarázat: két lefelé lépésnél egymilliószorosra nő az érték.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>6</sup>=1&nbsp;000&nbsp;000.</span>
+<span class='tartalomkek'>Hatványazonosság: 10<sup>3</sup>·10<sup>3</sup>=10<sup>6</sup>.</span>
+Válasz: <span class='adatkijeloles'>500&nbsp;000 cm<sup>3</sup></span>
+
+3. feladat
+Egy doboz térfogata <span class='adatkijeloles'>3,2 dm<sup>3</sup></span>. <span class='kerdeskijeloles'>Hány cm<sup>3</sup> ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span> <span class='osszefuggeskijeloles'>dm<sup>3</sup> → cm<sup>3</sup></span> (1 lépcső)
+<span class='tartalomkek'>Átlépett váltószámok:</span>
+<span class='osszefuggeskijeloles'>1000</span>
+<span class='osszefuggeskijeloles'>10<sup>3</sup></span>
+3,2 · 1000 = <span class='adatkijeloles'>3&nbsp;200 cm<sup>3</sup></span>
+<span class='tartalomkek'>Magyarázat: egy lefelé lépésnél ezerszeresére nő az érték.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>3</sup>=1&nbsp;000.</span>
+<span class='tartalomkek'>Hatványazonosság: 10<sup>3</sup>=10<sup>3</sup>.</span>
+Válasz: <span class='adatkijeloles'>3&nbsp;200 cm<sup>3</sup></span>
+
+4. feladat
+Egy edény térfogata <span class='adatkijeloles'><span class='frac'><span class='num'>3</span><span class='den'>4</span></span> dm<sup>3</sup></span>. <span class='kerdeskijeloles'>Hány mm<sup>3</sup> ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span> <span class='osszefuggeskijeloles'>dm<sup>3</sup> → cm<sup>3</sup> → mm<sup>3</sup></span> (2 lépcső)
+<span class='tartalomkek'>Átlépett váltószámok:</span>
+<span class='osszefuggeskijeloles'>1000 · 1000 = 1&nbsp;000&nbsp;000</span>
+<span class='osszefuggeskijeloles'>10<sup>3</sup> · 10<sup>3</sup> = 10<sup>6</sup></span>
+<span class='frac'><span class='num'>3</span><span class='den'>4</span></span> · 1&nbsp;000&nbsp;000 = <span class='adatkijeloles'>750&nbsp;000 mm<sup>3</sup></span>
+<span class='tartalomkek'>Magyarázat: két lefelé lépésnél egymilliószorosra nő az érték.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>6</sup>=1&nbsp;000&nbsp;000.</span>
+<span class='tartalomkek'>Hatványazonosság: 10<sup>3</sup>·10<sup>3</sup>=10<sup>6</sup>.</span>
+Válasz: <span class='adatkijeloles'>750&nbsp;000 mm<sup>3</sup></span>
+
+  </script>
+  <script>
+    let lines = [];
+    let currentLine = 0;
+    const textContainer = document.getElementById('text-container');
+    const lineElements = [];
+    const baseSize = 38;
+    const gap = 4;
+    const shrink = 2;
+    let animating = false;
+    let eduImg = null;
+    let eduPath = [];
+    let eduStep = 0;
+    let stepSize = 0;
+    let stepCount = 0;
+
+
+      function eduIdle() {
+        if (!eduImg) return;
+        const big = stepCount * stepSize;
+        eduImg.style.width = big +'px';
+        eduImg.style.height = big +'px';
+        eduImg.style.left = -big +'px';
+        eduImg.style.bottom = '0px';
+      }
+
+    function setupStairs(units) {
+      const bottomDiv = document.getElementById('bottom');
+      bottomDiv.innerHTML = '';
+      const unitOrder = ['mm3','cm3','dm3','m3','dam3','hm3','km3'];
+      stepCount = unitOrder.length;
+      const availH = bottomDiv.clientHeight;
+      const availW = bottomDiv.clientWidth;
+      stepSize = Math.min(availH / (stepCount + 1), availW / stepCount);
+      const stairSize = stepSize * stepCount;
+      const stairsDiv = document.createElement('div');
+      stairsDiv.style.position = 'relative';
+      stairsDiv.style.width = stairSize + 'px';
+      stairsDiv.style.height = stairSize + 'px';
+      bottomDiv.appendChild(stairsDiv);
+
+      for (let i = 0; i < stepCount; i++) {
+        const step = document.createElement('div');
+        step.style.position = 'absolute';
+        step.style.left = i * stepSize + 'px';
+        step.style.bottom = i * stepSize + 'px';
+        step.style.width = stepSize + 'px';
+        step.style.height = stepSize + 'px';
+        step.style.border = '2px solid #fff';
+        step.style.display = 'flex';
+        step.style.alignItems = 'center';
+        step.style.justifyContent = 'center';
+        step.style.fontWeight = 'bold';
+        const label = unitOrder[i];
+        const display = label.includes('3') ? label.replace('3', '<sup>3</sup>') : label;
+        step.innerHTML = display;
+        if (label === 'dm3' || label === 'dam3') {
+          step.style.color = 'rgb(179,179,179)';
+        }
+        stairsDiv.appendChild(step);
+      }
+
+      const ratios = Array(stepCount - 1).fill('1000 (10<sup>3</sup>)');
+      for (let i = 0; i < ratios.length; i++) {
+        const num = document.createElement('div');
+        num.innerHTML = ratios[i];
+        num.style.position = 'absolute';
+        num.style.left = i * stepSize + stepSize / 2 + 'px';
+        num.style.bottom = i * stepSize + stepSize * 1.3 + 'px';
+        num.style.transform = 'translateX(-50%)';
+        num.style.textAlign = 'center';
+        num.style.fontSize = Math.max(stepSize * 0.25, 14) + 'px';
+        stairsDiv.appendChild(num);
+      }
+
+      eduImg = document.createElement('img');
+      eduImg.src = 'Edu_átlátszó_háttér.svg';
+      eduImg.alt = 'Edu';
+      eduImg.style.position = 'absolute';
+      eduImg.style.transition = 'left 0.5s, bottom 0.5s, width 0.5s, height 0.5s';
+      stairsDiv.appendChild(eduImg);
+
+      eduPath = units.map(u => unitOrder.indexOf(u));
+      eduStep = 0;
+      eduIdle();
+    }
+
+    function moveEdu(stepIndex) {
+      if (!eduImg) return;
+      eduImg.style.width = stepSize + 'px';
+      eduImg.style.height = stepSize + 'px';
+      const left = stepIndex * stepSize;
+      const bottomPos = (stepIndex + 1) * stepSize;
+      eduImg.style.left = left + 'px';
+      eduImg.style.bottom = bottomPos + 'px';
+    }
+
+    function positionLines(offsetStart, relAdjust) {
+      let offset = offsetStart;
+      for (let i = lineElements.length - 1; i >= 0; i--) {
+        const rel = lineElements.length - 1 - i + relAdjust;
+        const size = baseSize - rel * shrink;
+        if (size <= 0) {
+          textContainer.removeChild(lineElements[i]);
+          lineElements.splice(i, 1);
+          continue;
+        }
+        const el = lineElements[i];
+        el.style.fontSize = size + 'pt';
+        el.style.bottom = offset + 'pt';
+        const extra = el.querySelector('.frac') ? size * 1.5 : 0;
+        offset += size + gap + extra;
+      }
+    }
+
+    function updateLines() {
+      positionLines(0, 0);
+    }
+
+    function advanceLines() {
+      positionLines(baseSize + gap, 1);
+    }
+
+    fetch('Térfogatlépcső_lefelé_feladatok.txt')
+      .then(r => r.text())
+      .then(t => {
+        lines = t.split('\n');
+        init();
+      })
+      .catch(() => {
+        const fallback = document.getElementById('fallback-lines').textContent;
+        lines = fallback.split('\n');
+        init();
+      });
+
+    function init() {
+      addLine();
+    }
+
+    function addLine() {
+      if (currentLine >= lines.length) return;
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.innerHTML = lines[currentLine];
+      div.style.fontSize = baseSize + 'pt';
+      textContainer.appendChild(div);
+      lineElements.push(div);
+      currentLine++;
+      updateLines();
+      const text = div.textContent || '';
+      if (
+        text.startsWith('Lépjünk lefelé:') ||
+        text.startsWith('Lépések lefelé:') ||
+        text.startsWith('Lépjünk felfelé:') ||
+        text.startsWith('Lépések felfelé:')
+      ) {
+        const unitsPart = text.split(':')[1];
+        const unitsStr = unitsPart.split('(')[0].split('.')[0];
+        const units = unitsStr.split('→').map(s => s.trim());
+        setupStairs(units);
+      }
+      requestAnimationFrame(() => { div.style.opacity = '1'; });
+    }
+
+    function handleNext() {
+      if (animating || currentLine >= lines.length) return;
+      animating = true;
+      advanceLines();
+      setTimeout(() => {
+        addLine();
+        if (eduPath.length) {
+          if (eduStep < eduPath.length) {
+            moveEdu(eduPath[eduStep]);
+            eduStep++;
+          } else {
+            eduIdle();
+            eduPath = [];
+          }
+        }
+        animating = false;
+      }, 500);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    });
+  </script>
+</body>
+</html>

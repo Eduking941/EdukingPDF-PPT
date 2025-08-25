@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tömeglépcső</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      color: #fff;
+      font-family: "Times New Roman", serif;
+    }
+    #top {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    #bottom {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    #divider {
+      height: 4pt;
+      background: #fff;
+    }
+    #text-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      bottom: 0;
+      opacity: 0;
+      color: #fff;
+      text-align: center;
+      transform: translateY(0);
+      transition: transform 0.6s ease-in-out, font-size 0.6s ease-in-out, opacity 0.6s ease-in-out;
+    }
+    .adatkijeloles { color: rgb(50,205,50); }
+    .kerdeskijeloles { color: rgb(235,0,0); }
+    .osszefuggeskijeloles { color: rgb(255,165,0); }
+    .tartalomkek { color: rgb(0,128,255); }
+  </style>
+</head>
+<body>
+  <div id="top">
+    <div id="text-container"></div>
+  </div>
+  <div id="divider"></div>
+  <div id="bottom"></div>
+  <script id="fallback-lines" type="text/plain">
+1. feladat
+<span class='adatkijeloles'>3 kilogramm</span> hány <span class='kerdeskijeloles'>dekagramm</span>?
+Megoldás:
+<span class='tartalomkek'>Lépjünk lefelé: <b>kilogramm</b> → <b>hektogramm</b> → <b>dekagramm</b>.</span>
+<span class='osszefuggeskijeloles'>1 kilogramm = 10 hektogramm</span>
+<span class='osszefuggeskijeloles'>1 hektogramm = 10 dekagramm</span>
+<span class='tartalomkek'>Átlépett váltószám: 10 · 10 = 100</span>
+3 · 10 · 10 = 3 · 100 = <span class='adatkijeloles'>300 dekagramm</span>
+Válasz: <span class='adatkijeloles'>300 dekagramm</span>
+
+2. feladat
+<span class='adatkijeloles'>5 mázsa</span> hány <span class='kerdeskijeloles'>gramm</span>?
+Megoldás:
+<span class='tartalomkek'>Lépjünk lefelé: <b>mázsa</b> → <b>kilogramm</b> → <b>hektogramm</b> → <b>dekagramm</b> → <b>gramm</b>.</span>
+<span class='osszefuggeskijeloles'>1 mázsa = 100 kilogramm</span>
+<span class='osszefuggeskijeloles'>1 kilogramm = 10 hektogramm</span>
+<span class='osszefuggeskijeloles'>1 hektogramm = 10 dekagramm</span>
+<span class='osszefuggeskijeloles'>1 dekagramm = 10 gramm</span>
+<span class='tartalomkek'>Átlépett váltószám: 100 · 10 · 10 · 10 = 100&nbsp;000</span>
+5 · 100 · 10 · 10 · 10 = 5 · 100&nbsp;000 = <span class='adatkijeloles'>500&nbsp;000 gramm</span>
+Válasz: <span class='adatkijeloles'>500&nbsp;000 gramm</span>
+
+3. feladat
+<span class='adatkijeloles'>2 tonna</span> hány <span class='kerdeskijeloles'>dekagramm</span>?
+Megoldás:
+<span class='tartalomkek'>Lépjünk lefelé: <b>tonna</b> → <b>mázsa</b> → <b>kilogramm</b> → <b>hektogramm</b> → <b>dekagramm</b>.</span>
+<span class='osszefuggeskijeloles'>1 tonna = 10 mázsa</span>
+<span class='osszefuggeskijeloles'>1 mázsa = 100 kilogramm</span>
+<span class='osszefuggeskijeloles'>1 kilogramm = 10 hektogramm</span>
+<span class='osszefuggeskijeloles'>1 hektogramm = 10 dekagramm</span>
+<span class='tartalomkek'>Átlépett váltószám: 10 · 100 · 10 · 10 = 100&nbsp;000</span>
+2 · 10 · 100 · 10 · 10 = 2 · 100&nbsp;000 = <span class='adatkijeloles'>200&nbsp;000 dekagramm</span>
+Válasz: <span class='adatkijeloles'>200&nbsp;000 dekagramm</span>
+
+4. feladat
+<span class='adatkijeloles'>4 tonna</span> hány <span class='kerdeskijeloles'>gramm</span>?
+Megoldás:
+<span class='tartalomkek'>Lépjünk lefelé: <b>tonna</b> → <b>mázsa</b> → <b>kilogramm</b> → <b>hektogramm</b> → <b>dekagramm</b> → <b>gramm</b>.</span>
+<span class='osszefuggeskijeloles'>1 tonna = 10 mázsa</span>
+<span class='osszefuggeskijeloles'>1 mázsa = 100 kilogramm</span>
+<span class='osszefuggeskijeloles'>1 kilogramm = 10 hektogramm</span>
+<span class='osszefuggeskijeloles'>1 hektogramm = 10 dekagramm</span>
+<span class='osszefuggeskijeloles'>1 dekagramm = 10 gramm</span>
+<span class='tartalomkek'>Átlépett váltószám: 10 · 100 · 10 · 10 · 10 = 1&nbsp;000&nbsp;000</span>
+4 · 10 · 100 · 10 · 10 · 10 = 4 · 1&nbsp;000&nbsp;000 = <span class='adatkijeloles'>4&nbsp;000&nbsp;000 gramm</span>
+Válasz: <span class='adatkijeloles'>4&nbsp;000&nbsp;000 gramm</span>
+  </script>
+  <script>
+    let lines = [];
+    let currentLine = 0;
+    const textContainer = document.getElementById('text-container');
+    const lineElements = [];
+
+    const baseSize = 38; // pt
+    const shrink = 2;    // pt per step
+    const gap = 4;       // pt spacing between lines
+    const pxPerPt = 96 / 72;
+    const gapPx = gap * pxPerPt;
+
+    let animating = false;
+
+    const bottom = document.getElementById('bottom');
+    let eduPath = [];
+    let eduStep = 0;
+    let stepSize = 0;
+    let stepCount = 0;
+    let stairsDiv, eduImg;
+
+    function eduIdle() {
+      if (!eduImg) return;
+      const big = stepCount * stepSize;
+      eduImg.style.width = big + 'px';
+      eduImg.style.height = big + 'px';
+      eduImg.style.left = -big + 'px';
+      eduImg.style.bottom = '0px';
+    }
+
+    const units = [
+      { name: 'milligramm', label: 'mg', color: '#fff' },
+      { name: 'centigramm', label: 'cg', color: '#888' },
+      { name: 'decigramm', label: 'dg', color: '#888' },
+      { name: 'gramm', label: 'g', color: '#fff' },
+      { name: 'dekagramm', label: 'dag', color: '#fff' },
+      { name: 'hektogramm', label: 'hg', color: '#888' },
+      { name: 'kilogramm', label: 'kg', color: '#fff' },
+      { name: 'tízkilogramm', label: '', color: '#fff' },
+      { name: 'mázsa', label: 'q', color: '#fff' },
+      { name: 'tonna', label: 't', color: '#fff' }
+    ];
+    const unitOrder = units.map(u => u.name);
+
+    function setupStairs(unitsInLine) {
+      bottom.innerHTML = '';
+      stepCount = units.length;
+      const availH = bottom.clientHeight;
+      const availW = bottom.clientWidth;
+      stepSize = Math.min(availH / (stepCount + 1), availW / stepCount);
+      const stairSize = stepSize * stepCount;
+      stairsDiv = document.createElement('div');
+      stairsDiv.style.position = 'relative';
+      stairsDiv.style.width = stairSize + 'px';
+      stairsDiv.style.height = stairSize + 'px';
+      bottom.appendChild(stairsDiv);
+
+      for (let i = 0; i < stepCount; i++) {
+        const step = document.createElement('div');
+        step.style.position = 'absolute';
+        step.style.left = i * stepSize + 'px';
+        step.style.bottom = i * stepSize + 'px';
+        step.style.width = stepSize + 'px';
+        step.style.height = stepSize + 'px';
+        step.style.border = '1px solid #fff';
+        step.style.display = 'flex';
+        step.style.alignItems = 'center';
+        step.style.justifyContent = 'center';
+        step.style.textAlign = 'center';
+        step.style.boxSizing = 'border-box';
+        step.style.fontWeight = 'bold';
+        step.style.color = units[i].color;
+        step.textContent = units[i].label;
+        stairsDiv.appendChild(step);
+      }
+
+      const ratios = new Array(stepCount - 1).fill(10);
+      for (let i = 0; i < ratios.length; i++) {
+        const num = document.createElement('div');
+        num.textContent = ratios[i];
+        num.style.position = 'absolute';
+        num.style.left = i * stepSize + stepSize / 2 + 'px';
+        num.style.bottom = i * stepSize + stepSize * 1.3 + 'px';
+        num.style.transform = 'translateX(-50%)';
+        stairsDiv.appendChild(num);
+      }
+
+      eduImg = document.createElement('img');
+      eduImg.src = 'Edu_átlátszó_háttér.svg';
+      eduImg.alt = 'Edu';
+      eduImg.style.position = 'absolute';
+      eduImg.style.transition = 'left 0.5s, bottom 0.5s, width 0.5s, height 0.5s';
+      stairsDiv.appendChild(eduImg);
+
+      const indices = unitsInLine.map(u => unitOrder.indexOf(u));
+      eduPath = [];
+      for (let i = 0; i < indices.length; i++) {
+        if (i === 0) {
+          eduPath.push(indices[i]);
+        } else {
+          const prev = indices[i - 1];
+          const curr = indices[i];
+          const step = curr > prev ? 1 : -1;
+          for (let j = prev + step; j !== curr + step; j += step) {
+            eduPath.push(j);
+          }
+        }
+      }
+      eduStep = 0;
+      eduIdle();
+    }
+
+    function moveEdu(stepIndex) {
+      if (!eduImg) return;
+      eduImg.style.width = stepSize + 'px';
+      eduImg.style.height = stepSize + 'px';
+      const left = stepIndex * stepSize;
+      const bottomPos = (stepIndex + 1) * stepSize;
+      eduImg.style.left = left + 'px';
+      eduImg.style.bottom = bottomPos + 'px';
+    }
+
+    function positionLines(offsetStartPx, relAdjust) {
+      let offset = offsetStartPx;
+      for (let i = lineElements.length - 1; i >= 0; i--) {
+        const rel = lineElements.length - 1 - i + relAdjust;
+        const size = baseSize - rel * shrink;
+        if (size <= 0) {
+          textContainer.removeChild(lineElements[i]);
+          lineElements.splice(i, 1);
+          continue;
+        }
+        const el = lineElements[i];
+        el.style.fontSize = size + 'pt';
+        const h = el.offsetHeight;
+        el.style.transform = `translateY(${-offset}px)`;
+        offset += h + gapPx;
+      }
+    }
+
+    function updateLines() {
+      positionLines(0, 0);
+    }
+
+    function advanceLines() {
+      positionLines((baseSize - shrink + gap) * pxPerPt, 1);
+    }
+
+    fetch('Tömeglépcső.txt')
+      .then(r => r.text())
+      .then(t => {
+        lines = t.split('\n');
+        init();
+      })
+      .catch(() => {
+        const tpl = document.getElementById('fallback-lines');
+        const fallback = tpl ? tpl.textContent : '';
+        lines = fallback.split('\n');
+        init();
+      });
+
+    function init() {
+      addLine();
+    }
+
+    function addLine() {
+      if (currentLine >= lines.length) return;
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.innerHTML = lines[currentLine];
+      div.style.fontSize = baseSize + 'pt';
+      textContainer.appendChild(div);
+      lineElements.push(div);
+      currentLine++;
+      updateLines();
+      const text = div.textContent || '';
+      if (text.startsWith('Lépjünk lefelé:') || text.startsWith('Lépjünk felfelé:')) {
+        const unitsStr = text.split(':')[1].split('.')[0];
+        const units = unitsStr.split('→').map(s => s.trim());
+        setupStairs(units);
+      }
+      requestAnimationFrame(() => { div.style.opacity = '1'; });
+    }
+
+    function handleNext() {
+      if (animating || currentLine >= lines.length) return;
+      animating = true;
+      advanceLines();
+      const waits = lineElements.map(el => new Promise(resolve => {
+        const handler = e => {
+          if (e.propertyName === 'transform') {
+            el.removeEventListener('transitionend', handler);
+            resolve();
+          }
+        };
+        el.addEventListener('transitionend', handler);
+      }));
+      Promise.all(waits).then(() => {
+        addLine();
+        if (eduPath.length) {
+          if (eduStep < eduPath.length) {
+            moveEdu(eduPath[eduStep]);
+            eduStep++;
+          } else {
+            eduIdle();
+            eduPath = [];
+          }
+        }
+        animating = false;
+      });
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    });
+  </script>
+</body>
+</html>
