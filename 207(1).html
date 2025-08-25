@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Távolságlépcső</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      color: #fff;
+      font-family: "Times New Roman", serif;
+    }
+    #top {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    #bottom {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    #divider {
+      height: 4pt;
+      background: #fff;
+    }
+    #text-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .line {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      bottom: 0;
+      opacity: 0;
+      color: #fff;
+      transition: bottom 0.5s linear, font-size 0.5s linear, opacity 0.5s linear;
+    }
+    .adatkijeloles { color: rgb(50,205,50); }
+    .kerdeskijeloles { color: rgb(235,0,0); }
+    .osszefuggeskijeloles { color: rgb(255,165,0); }
+    .tartalomkek { color: rgb(0,128,255); }
+  </style>
+</head>
+<body>
+  <div id="top">
+    <div id="text-container"></div>
+  </div>
+  <div id="divider"></div>
+  <div id="bottom"></div>
+  <script type="text/plain" id="fallback-lines" style="display:none;">
+1. feladat
+Egy deszka hossza <span class='adatkijeloles'>3,28 m</span>. <span class='kerdeskijeloles'>Hány cm ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span> <span class='osszefuggeskijeloles'>m → dm → cm</span> (2 lépcső)
+<span class='tartalomkek'>Átlépett váltószámok:</span>
+<span class='osszefuggeskijeloles'>10 · 10 = 100</span>
+3,28 · 100 = <span class='adatkijeloles'>328 cm</span>
+<span class='tartalomkek'>Magyarázat: két lefelé lépésnél százzal szorzunk.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>2</sup>=100.</span>
+<span class='tartalomkek'>Hatványazonosság: 10<sup>1</sup>·10<sup>1</sup>=10<sup>2</sup>.</span>
+Válasz: <span class='adatkijeloles'>328 cm</span>
+
+2. feladat
+Egy országút hossza <span class='adatkijeloles'>7,46 km</span>. <span class='kerdeskijeloles'>Hány m ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span> <span class='osszefuggeskijeloles'>km → hm → dam → m</span> (3 lépcső)
+<span class='tartalomkek'>Átlépett váltószámok:</span>
+<span class='osszefuggeskijeloles'>10 · 10 · 10 = 1&nbsp;000</span>
+7,46 · 1&nbsp;000 = <span class='adatkijeloles'>7&nbsp;460 m</span>
+<span class='tartalomkek'>Magyarázat: három lefelé lépés ezerszeres szorzást jelent.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>3</sup>=1&nbsp;000.</span>
+<span class='tartalomkek'>Hatványazonosság: 10<sup>1</sup>·10<sup>1</sup>·10<sup>1</sup>=10<sup>3</sup>.</span>
+Válasz: <span class='adatkijeloles'>7&nbsp;460 m</span>
+
+3. feladat
+Egy ceruza hossza <span class='adatkijeloles'>18,5 cm</span>. <span class='kerdeskijeloles'>Hány mm ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span> <span class='osszefuggeskijeloles'>cm → mm</span> (1 lépcső)
+<span class='tartalomkek'>Átlépett váltószám:</span>
+<span class='osszefuggeskijeloles'>10</span>
+18,5 · 10 = <span class='adatkijeloles'>185 mm</span>
+<span class='tartalomkek'>Magyarázat: egy lefelé lépésnél tízzel szorzunk.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>1</sup>=10.</span>
+<span class='tartalomkek'>Hatványazonosság: 10<sup>a</sup>·10<sup>b</sup>=10<sup>a+b</sup>.</span>
+Válasz: <span class='adatkijeloles'>185 mm</span>
+
+4. feladat
+Egy futópálya hossza <span class='adatkijeloles'>0,92 km</span>. <span class='kerdeskijeloles'>Hány cm ez?</span>
+Megoldás:
+<span class='tartalomkek'>Lépések lefelé:</span>
+<span class='osszefuggeskijeloles'>km → hm → dam → m → dm → cm</span> (5 lépcső)
+<span class='tartalomkek'>Átlépett váltószámok:</span>
+<span class='osszefuggeskijeloles'>10 · 10 · 10 · 10 · 10 = 100&nbsp;000</span>
+0,92 · 100&nbsp;000 = <span class='adatkijeloles'>92&nbsp;000 cm</span>
+<span class='tartalomkek'>Magyarázat: öt lefelé lépésnél százezerszeresre szorzunk.</span>
+<span class='tartalomkek'>Tízes hatvány: 10<sup>5</sup>=100&nbsp;000.</span>
+<span class='tartalomkek'>Hatványazonosság:</span>
+<span class='tartalomkek'>10<sup>1</sup>·10<sup>1</sup>·10<sup>1</sup></span>
+<span class='tartalomkek'>·10<sup>1</sup>·10<sup>1</sup>=10<sup>5</sup>.</span>
+Válasz: <span class='adatkijeloles'>92&nbsp;000 cm</span>
+
+</script>
+  <script>
+    let lines = [];
+    let currentLine = 0;
+    const textContainer = document.getElementById('text-container');
+    const lineElements = [];
+
+    const baseSize = 38; // pt
+    const shrink = 2;    // pt per step
+    const gap = 4;       // pt spacing between lines
+
+    let animating = false;
+
+    const bottom = document.getElementById('bottom');
+    let eduPath = [];
+    let eduStep = 0;
+    let stepSize = 0;
+    let stepCount = 0;
+    let stairsDiv, eduImg;
+
+    function eduIdle() {
+      if (!eduImg) return;
+      const big = stepCount * stepSize;
+      eduImg.style.width = big + 'px';
+      eduImg.style.height = big + 'px';
+      eduImg.style.left = -big + 'px';
+      eduImg.style.bottom = '0px';
+    }
+
+    const unitOrder = ['mm','cm','dm','m','dam','hm','km'];
+
+    function setupStairs(units) {
+      bottom.innerHTML = '';
+      stepCount = unitOrder.length;
+      const availH = bottom.clientHeight;
+      const availW = bottom.clientWidth;
+      stepSize = Math.min(availH / (stepCount + 1), availW / stepCount);
+      const stairSize = stepSize * stepCount;
+      stairsDiv = document.createElement('div');
+      stairsDiv.style.position = 'relative';
+      stairsDiv.style.width = stairSize + 'px';
+      stairsDiv.style.height = stairSize + 'px';
+      bottom.appendChild(stairsDiv);
+
+      for (let i = 0; i < stepCount; i++) {
+        const step = document.createElement('div');
+        step.style.position = 'absolute';
+        step.style.left = i * stepSize + 'px';
+        step.style.bottom = i * stepSize + 'px';
+        step.style.width = stepSize + 'px';
+        step.style.height = stepSize + 'px';
+        step.style.border = '1px solid #fff';
+        step.style.display = 'flex';
+        step.style.alignItems = 'center';
+        step.style.justifyContent = 'center';
+        step.style.textAlign = 'center';
+        step.style.boxSizing = 'border-box';
+        step.style.fontWeight = 'bold';
+        const label = unitOrder[i];
+        if (label === 'másodperc') {
+          step.innerHTML = '<div>másod-<br>perc</div>';
+        } else {
+          step.textContent = label;
+        }
+        stairsDiv.appendChild(step);
+      }
+
+      const ratios = [10, 10, 10, 10, 10, 10];
+      for (let i = 0; i < ratios.length; i++) {
+        const num = document.createElement('div');
+        num.textContent = ratios[i];
+        num.style.position = 'absolute';
+        num.style.left = i * stepSize + stepSize / 2 + 'px';
+        num.style.bottom = i * stepSize + stepSize * 1.3 + 'px';
+        num.style.transform = 'translateX(-50%)';
+        stairsDiv.appendChild(num);
+      }
+
+      eduImg = document.createElement('img');
+      eduImg.src = 'Edu_átlátszó_háttér.svg';
+      eduImg.alt = 'Edu';
+      eduImg.style.position = 'absolute';
+      eduImg.style.transition = 'left 0.5s, bottom 0.5s, width 0.5s, height 0.5s';
+      stairsDiv.appendChild(eduImg);
+
+      eduPath = units.map(u => unitOrder.indexOf(u));
+      eduStep = 0;
+      eduIdle();
+    }
+
+    function moveEdu(stepIndex) {
+      if (!eduImg) return;
+      eduImg.style.width = stepSize + 'px';
+      eduImg.style.height = stepSize + 'px';
+      const left = stepIndex * stepSize;
+      const bottomPos = (stepIndex + 1) * stepSize;
+      eduImg.style.left = left + 'px';
+      eduImg.style.bottom = bottomPos + 'px';
+    }
+
+    function positionLines(offsetStart, relAdjust) {
+      let offset = offsetStart;
+      for (let i = lineElements.length - 1; i >= 0; i--) {
+        const rel = lineElements.length - 1 - i + relAdjust;
+        const size = baseSize - rel * shrink;
+        if (size <= 0) {
+          textContainer.removeChild(lineElements[i]);
+          lineElements.splice(i, 1);
+          continue;
+        }
+        const el = lineElements[i];
+        el.style.fontSize = size + 'pt';
+        el.style.bottom = offset + 'pt';
+        offset += size + gap;
+      }
+    }
+
+    function updateLines() {
+      positionLines(0, 0);
+    }
+
+    function advanceLines() {
+      positionLines(baseSize + gap, 1);
+    }
+
+    fetch('Távolságlépcső_feladatok.txt')
+      .then(r => r.text())
+      .then(t => {
+        lines = t.split('\n');
+        init();
+      })
+      .catch(() => {
+        const fallback = document.getElementById('fallback-lines').textContent;
+        lines = fallback.split('\n');
+        init();
+      });
+
+    function init() {
+      addLine();
+    }
+
+    function addLine() {
+      if (currentLine >= lines.length) return;
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.innerHTML = lines[currentLine];
+      div.style.fontSize = baseSize + 'pt';
+      textContainer.appendChild(div);
+      lineElements.push(div);
+      currentLine++;
+      updateLines();
+      const text = div.textContent || '';
+      if (text.startsWith('Lépjünk lefelé:') || text.startsWith('Lépések lefelé:')) {
+        const unitsPart = text.split(':')[1];
+        const unitsStr = unitsPart.split('(')[0].split('.')[0];
+        const units = unitsStr.split('→').map(s => s.trim());
+        setupStairs(units);
+      }
+      requestAnimationFrame(() => { div.style.opacity = '1'; });
+    }
+
+    function handleNext() {
+      if (animating || currentLine >= lines.length) return;
+      animating = true;
+      advanceLines();
+      setTimeout(() => {
+        addLine();
+        if (eduPath.length) {
+          if (eduStep < eduPath.length) {
+            moveEdu(eduPath[eduStep]);
+            eduStep++;
+          } else {
+            eduIdle();
+            eduPath = [];
+          }
+        }
+        animating = false;
+      }, 500);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    });
+  </script>
+</body>
+</html>
