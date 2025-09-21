@@ -1,0 +1,57 @@
+Eduking – Arculati összefoglaló (Codex számára)
+
+1. **Színek**:
+
+* Háttér: nagyon sötét szürke (RGB: 30, 30, 30)
+* Szöveg: fehér (RGB: 255, 255, 255)
+* Kulcsszavak színezése:
+
+  * Adat: zöld (RGB: 50, 205, 50)
+  * Kérdés: piros (RGB: 235, 0, 0)
+  * Összefüggés, művelet vagy szabály: narancssárga (RGB: 255, 165, 0)
+  * Magyárázat: kék (RGB: 0, 128, 255)
+
+A színezés kizárólag a szövegben szereplő kulcsszavakat érinti (pl. az **adatokat**, a **kérdést** vagy a fontos **szabályokat**). Ezek lehetnek nyelvtanilag alany, állítmány vagy tárgy. A teljes szöveg színezett része összesen **legfeljebb 20%** lehet, a fennmaradó 80% mindig fehér betűszínnel jelenik meg.
+
+2. **Elrendezés**:
+
+* A képernyő közepén egy **4 pixel vastag fehér vízszintes vonal** osztja kettőbe a feladatfelületet.
+
+  * A vonal **fölött** jelenik meg a narrációs szöveg.
+  * A vonal **alatt** jelenik meg a vizuális megerősítés (pl. ábra).
+* Az elrendezés mindig úgy történjék, hogy **scrollbar ne jelenjen meg**, minden tartalom be kell férjen a képernyőre (mert videófelvétel készül belőle).
+
+3. **Narrációs szöveg mozgása**:
+
+* A narráció mindig a vonal fölötti részen indul.
+* A szöveg **40 pt** betűmérettel kezd.
+* Amikor új sor érkezik:
+
+  * A meglévő sorok **feljebb csúsznak** (kifele a képből),
+  * és minden sor **4 pt-tal kisebb** lesz (36 pt, 32 pt, stb.).
+* A szövegek nem tűnnek el, csak lassan **kifutnak felfelé**.
+
+4. **Matematikai szövegek megjelenítése**:
+
+* A dokumentum HTML-ben készül, ezért minden matematikai szöveget helyesen kell megjeleníteni **MathJax** vagy **KaTeX** segítségével.
+* A matematikai kifejezések **inline** formában `$...$` vagy **block** formában `$$...$$` közé kerülnek.
+* Szöveg legyen tagolt, érthető, didaktikus.
+* Műveleti jelek:
+
+  * Szorzás: \cdot
+  * Osztás: :
+* Törtek: \frac{a}{b}
+* Számok: magyar helyesírás szerint tagolt (pl. 1 234 567)
+* Hibalehetőségek elkerülése érdekében minden HTML oldalon legyen betöltve a megfelelő MathJax vagy KaTeX szkript, például:
+
+```html
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+```
+
+5. **Rajzok és ábrák**:
+
+* A vizuális ábrákat mindig **D3.js**-szel kell készíteni.
+* Az arculati színeket kell használni a kiemeléshez.
+
+Ez a szabályzat szöveges (.txt) formában menthető és a GitHub-on keresztül beolvasható a Codex számára.
