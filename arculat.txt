@@ -7,7 +7,7 @@
   * Adat: zöld (RGB: 50, 205, 50)
   * Kérdés: piros (RGB: 235, 0, 0)
   * Összefüggés, művelet vagy szabály: narancssárga (RGB: 255, 165, 0)
-  * Magyárázat: kék (RGB: 0, 128, 255)
+  * Magyarázat: kék (RGB: 0, 128, 255)
 
 A színezés kizárólag a szövegben szereplő kulcsszavakat érinti (pl. az **adatokat**, a **kérdést** vagy a fontos **szabályokat**). Ezek lehetnek nyelvtanilag alany, állítmány vagy tárgy. A teljes szöveg színezett része összesen **legfeljebb 20%** lehet, a fennmaradó 80% mindig fehér betűszínnel jelenik meg.
 
@@ -57,3 +57,13 @@ A színezés kizárólag a szövegben szereplő kulcsszavakat érinti (pl. az **
 
 * A vizuális ábrákat mindig **D3.js**-szel kell készíteni.
 * Az arculati színeket kell használni a kiemeléshez.
+
+6. **Feladatok felépítése és lépésenkénti megjelenítés**:
+
+* Minden feladat **lépésenként halad** előre.
+* Az egyes lépések egy **nyíl (→)** megjelenésével indulnak.
+* Minden lépéshez két tartalom jelenik meg párhuzamosan:
+
+  * egy **vizuális megerősítő rész** (pl. ábra, vázlat, számításmenet),
+  * és egy **magyarázó szöveg**.
+* Az **egyenletek és számítások is a vizuális megerősítés területén** jelennek meg, **30 pt** betűméretben, esztétikus, tankönyvszerű megjelenéssel.
