@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kördiagram – Hogyan járnak iskolába a diákok?</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Merriweather:wght@400;600&family=Source+Sans+Pro:wght@400;600&display=swap');
+    :root {
+      color-scheme: dark;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: rgb(30,30,30);
+      color: #ffffff;
+      font-family: "Times New Roman", serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+      transition: background 0.6s ease, color 0.6s ease;
+    }
+    body.task-theme-1 {
+      background: radial-gradient(circle at top, rgba(40,40,40,0.9), rgb(20,20,20));
+    }
+    body.task-theme-2 {
+      background: radial-gradient(circle at top, rgba(74,29,45,0.92), rgb(23,9,15));
+      font-family: "Cardo", serif;
+    }
+    body.task-theme-3 {
+      background: radial-gradient(circle at top, rgba(16,48,70,0.94), rgb(6,18,30));
+      font-family: "Merriweather", serif;
+    }
+    body.task-theme-4 {
+      background: radial-gradient(circle at top, rgba(36,34,64,0.94), rgb(10,8,26));
+      font-family: "Source Sans Pro", sans-serif;
+    }
+    #top {
+      flex: 1 1 0;
+      min-height: 0;
+      position: relative;
+      padding: 24px 60px 0;
+      box-sizing: border-box;
+      display: flex;
+      align-items: stretch;
+      background: linear-gradient(180deg, rgba(18,18,18,0.85) 0%, rgba(18,18,18,0.65) 100%);
+      box-shadow: inset 0 -22px 36px rgba(0,0,0,0.55);
+      z-index: 1;
+      transition: background 0.6s ease;
+    }
+    body.task-theme-2 #top {
+      background: linear-gradient(180deg, rgba(112,37,56,0.9) 0%, rgba(60,14,28,0.7) 100%);
+    }
+    body.task-theme-3 #top {
+      background: linear-gradient(180deg, rgba(17,67,102,0.9) 0%, rgba(10,32,54,0.72) 100%);
+    }
+    body.task-theme-4 #top {
+      background: linear-gradient(180deg, rgba(58,40,118,0.92) 0%, rgba(22,18,60,0.7) 100%);
+    }
+    #text-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: hidden;
+    }
+    #narration-panel {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      gap: 24px;
+      text-shadow: 0 0 12px rgba(0,0,0,0.7);
+      padding: 28px 36px 0;
+    }
+    #task-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+    }
+    #task-title {
+      font-size: 46px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    #step-main {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 120px;
+      font-size: 40px;
+      line-height: 1.3;
+      overflow: hidden;
+      padding: 0 12px 0;
+      position: relative;
+    }
+    #step-lines {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .step-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      transform: translateY(0);
+      opacity: 0.62;
+      transition:
+        font-size 0.72s cubic-bezier(0.19, 1, 0.22, 1),
+        opacity 0.55s ease,
+        transform 0.72s cubic-bezier(0.19, 1, 0.22, 1);
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      line-height: 1.35;
+      white-space: normal;
+      word-break: keep-all;
+      padding: 0;
+    }
+    .step-line.active {
+      opacity: 1;
+    }
+    .step-line.entering {
+      opacity: 0;
+      transform: translateY(140px);
+    }
+    .step-line.pending-entry {
+      opacity: 0;
+    }
+    #divider {
+      height: 4px;
+      background: #ffffff;
+      flex: 0 0 4px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 -6px 12px rgba(0,0,0,0.6);
+    }
+    #bottom {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 60px 40px;
+      gap: 48px;
+      box-sizing: border-box;
+      overflow: visible;
+      background: linear-gradient(0deg, rgba(12,12,12,0.85) 0%, rgba(12,12,12,0.65) 100%);
+      box-shadow: inset 0 26px 42px rgba(0,0,0,0.55);
+      transition: background 0.6s ease;
+    }
+    body.task-theme-2 #bottom {
+      background: linear-gradient(0deg, rgba(34,12,19,0.88) 0%, rgba(22,8,14,0.7) 100%);
+    }
+    body.task-theme-3 #bottom {
+      background: linear-gradient(0deg, rgba(12,32,46,0.88) 0%, rgba(6,18,30,0.7) 100%);
+    }
+    body.task-theme-4 #bottom {
+      background: linear-gradient(0deg, rgba(18,14,36,0.9) 0%, rgba(12,10,24,0.72) 100%);
+    }
+    #visual {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 18px;
+      max-width: 720px;
+      transition: opacity 0.4s ease;
+      background: rgba(8,8,8,0.55);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 24px 24px 32px;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.45);
+    }
+    #chart {
+      width: 560px;
+      height: 560px;
+    }
+    svg {
+      overflow: visible;
+    }
+    .slice-path {
+      stroke: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .slice-path.dimmed {
+      opacity: 0.25;
+    }
+    .slice-path.highlighted {
+      opacity: 1;
+    }
+    #info-panel {
+      flex: 0 0 620px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px 32px;
+      padding: 20px 28px;
+      background: rgba(0,0,0,0.45);
+      border: 2px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      box-shadow: 0 0 18px rgba(0,0,0,0.55);
+      font-size: 24px;
+      transition: opacity 0.4s ease;
+      align-content: flex-start;
+    }
+    body.task-theme-2 #info-panel {
+      background: rgba(56,14,26,0.55);
+      border-color: rgba(255,214,214,0.28);
+    }
+    body.task-theme-3 #info-panel {
+      background: rgba(10,28,44,0.55);
+      border-color: rgba(180,220,255,0.28);
+    }
+    body.task-theme-4 #info-panel {
+      background: rgba(18,12,46,0.55);
+      border-color: rgba(198,190,255,0.25);
+    }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      line-height: 1.35;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0.65;
+      flex: 1 1 calc(50% - 32px);
+      min-width: 240px;
+    }
+    .info-item.active {
+      opacity: 1;
+      transform: translateX(6px);
+    }
+    .info-color {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.6);
+      flex: 0 0 26px;
+    }
+    .info-text {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .info-heading {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 24px;
+    }
+    .info-angle {
+      font-weight: 600;
+      min-width: 58px;
+    }
+    .info-label {
+      font-weight: 400;
+    }
+    .info-quantity {
+      font-size: 22px;
+      opacity: 0.85;
+    }
+    .info-percent {
+      font-size: 22px;
+      opacity: 0.85;
+    }
+    .concealed {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+    .summary-table {
+      margin-top: 16px;
+      border-collapse: collapse;
+      font-size: 22px;
+    }
+    .summary-table td, .summary-table th {
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 10px;
+    }
+    .summary-table th {
+      text-align: left;
+      background: rgba(255,255,255,0.08);
+    }
+    @media (max-width: 1500px) {
+      #bottom {
+        padding: 20px 32px;
+        gap: 24px;
+        flex-direction: column;
+        align-items: center;
+      }
+      #info-panel {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 720px;
+        justify-content: center;
+      }
+      .info-item {
+        flex: 1 1 calc(50% - 24px);
+      }
+      #chart {
+        width: 540px;
+        height: 540px;
+      }
+    }
+    @media (max-width: 1100px) {
+      #info-panel {
+        flex-direction: column;
+        flex-wrap: nowrap;
+      }
+      .info-item {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body class="task-theme-1">
+  <div id="top">
+    <div id="text-container">
+      <div id="narration-panel" aria-live="polite">
+        <div id="task-header">
+          <div id="task-title"></div>
+        </div>
+        <div id="step-main"><div id="step-lines"></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="divider"></div>
+  <div id="bottom">
+    <div id="info-panel" class="concealed" aria-hidden="true"></div>
+    <div id="visual" class="concealed" aria-hidden="true">
+      <div id="chart" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="sr-only" id="alt-text"></div>
+  <div class="sr-only" aria-hidden="false">
+    <table class="summary-table">
+      <thead>
+        <tr id="summary-header"></tr>
+      </thead>
+      <tbody id="summary-body"></tbody>
+    </table>
+  </div>
+  <script>
+    const formatInteger = new Intl.NumberFormat('hu-HU');
+    const formatDecimal = new Intl.NumberFormat('hu-HU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formatPercent = new Intl.NumberFormat('hu-HU', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+
+    const taskTitle = document.getElementById('task-title');
+    const body = document.body;
+    const infoPanel = document.getElementById('info-panel');
+    const visual = document.getElementById('visual');
+    const chartContainer = document.getElementById('chart');
+    const altTextNode = document.getElementById('alt-text');
+    const summaryHeader = document.getElementById('summary-header');
+    const summaryBody = document.getElementById('summary-body');
+
+    const mathQueue = new Set();
+    let mathJaxReady = false;
+
+    function markMathReady() {
+      mathJaxReady = true;
+      flushMathQueue();
+    }
+
+    if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+      MathJax.startup.promise.then(markMathReady);
+    } else {
+      window.addEventListener('load', () => {
+        if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+          MathJax.startup.promise.then(markMathReady);
+        }
+      });
+    }
+
+    function typesetNode(node) {
+      if (!node) {
+        return;
+      }
+      if (mathJaxReady && window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([node]).then(() => {
+          requestAnimationFrame(() => layoutNarration());
+        });
+      } else {
+        mathQueue.add(node);
+      }
+    }
+
+    function flushMathQueue() {
+      if (!mathQueue.size || !mathJaxReady || !window.MathJax || !MathJax.typesetPromise) {
+        return;
+      }
+      const nodes = Array.from(mathQueue).filter(node => node && node.isConnected);
+      mathQueue.clear();
+      if (!nodes.length) {
+        return;
+      }
+      MathJax.typesetPromise(nodes).then(() => {
+        requestAnimationFrame(() => layoutNarration());
+      });
+    }
+    function createTask1() {
+      const slices = [
+        { id: 'busz', label: 'Busz', angle_deg: 144, percent: 40, display_angle: '144°', color: 'rgb(135,206,250)', detail: 'Busszal járó diákok' },
+        { id: 'gyalog', label: 'Gyalog', angle_deg: 90, percent: 25, display_angle: '90°', color: 'rgb(255,99,71)', detail: 'Gyalog közlekedő diákok' },
+        { id: 'kerekpar', label: 'Kerékpár', angle_deg: 54, percent: 15, display_angle: '?', color: 'rgb(255,215,0)', detail: 'Kerékpárral járó diákok' },
+        { id: 'auto', label: 'Autó', angle_deg: 54, percent: 15, display_angle: '54°', color: 'rgb(144,238,144)', detail: 'Autóval közlekedő diákok' },
+        { id: 'egyeb', label: 'Egyéb', angle_deg: 18, percent: 5, display_angle: '?', color: 'rgb(220,220,220)', detail: 'Rollerrel közlekedő diákok' }
+      ];
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const yellowStudentCount = 162;
+      const yellowAngle = 54;
+      const perDegree = yellowStudentCount / yellowAngle;
+      const counts = {
+        busz: 144 * perDegree,
+        gyalog: 90 * perDegree,
+        kerekpar: yellowStudentCount,
+        auto: 54 * perDegree,
+        egyeb: 18 * perDegree
+      };
+      const totalStudents = Object.values(counts).reduce((sum, value) => sum + value, 0);
+      const percentages = Object.fromEntries(
+        Object.entries(counts).map(([id, value]) => [id, Math.round((value / totalStudents) * 100)])
+      );
+      const perDegreeText = formatInteger.format(perDegree);
+      const perDegreeSymbol = '=';
+      const knownAngleSum = 144 + 90 + 54;
+      const remainingAngle = 360 - knownAngleSum;
+      const greyAngle = remainingAngle - yellowAngle;
+      const steps = [
+        { main: 'Az alábbi kördiagramm egy kisváros diákjainak az utazási szokásairól szól.', focus: null },
+        { main: `A <span style="color:${colorById['busz']}; font-weight:600;">kék körcikk 144 fokos</span>, ez a busszal járó diákokat jelöli.`, focus: ['busz'] },
+        { main: `A 90 fokos körcikk, a <span style="color:${colorById['gyalog']}; font-weight:600;">piros</span> jelöli azokat, akik gyalog járnak.`, focus: ['gyalog'] },
+        { main: `A <span style="color:${colorById['kerekpar']}; font-weight:600;">sárga körcikkről</span> nem tudjuk, hogy hány fokos.`, focus: ['kerekpar'] },
+        { main: `Csak azt tudjuk biztosan, hogy ez <span style="color:${colorById['kerekpar']}; font-weight:600;">${formatInteger.format(yellowStudentCount)} diákot</span> jelent.`, focus: ['kerekpar'], revealQuantities: { kerekpar: counts['kerekpar'] }, preRaise: true },
+        { main: `A <span style="color:${colorById['auto']}; font-weight:600;">zölddel jelölt körcikk 54 fokos</span>.`, focus: ['auto'] },
+        { main: `Ez a <span style="color:${colorById['auto']}; font-weight:600;">zöld szelet</span> az autóval közlekedő diákokat jelöli.`, focus: ['auto'] },
+        { main: `A <span style="color:${colorById['egyeb']}; font-weight:600;">szürke körcikkről</span> semmit sem tudunk, ők a rollerrel közlekedő diákok.`, focus: ['egyeb'] },
+        { main: `A teljes kör ${360}°.`, focus: null },
+        { main: `A <span style="color:${colorById['busz']}; font-weight:600;">kék szelet</span> 144°-os.`, focus: ['busz'] },
+        { main: `A <span style="color:${colorById['gyalog']}; font-weight:600;">piros szelet</span> 90°-os.`, focus: ['gyalog'] },
+        { main: `A <span style="color:${colorById['auto']}; font-weight:600;">zöld szelet</span> 54°-os.`, focus: ['auto'] },
+        { main: 'Ezek együtt 288°-ot adnak.', focus: ['busz', 'gyalog', 'auto'] },
+        { main: `<span style="color:${colorById['busz']}; font-weight:600;">144°</span> + <span style="color:${colorById['gyalog']}; font-weight:600;">90°</span> + <span style="color:${colorById['auto']}; font-weight:600;">54°</span> = 288°.`, focus: ['busz', 'gyalog', 'auto'] },
+        { main: `Így 360° - 288° = 72° marad a <span style="color:${colorById['kerekpar']}; font-weight:600;">sárga</span> és a <span style="color:${colorById['egyeb']}; font-weight:600;">szürke</span> szeletekre.`, focus: ['kerekpar', 'egyeb'], forcePreShift: true, forcePreShiftStart: true },
+        { main: `A diagramról leolvasható, hogy a <span style="color:${colorById['kerekpar']}; font-weight:600;">sárga körcikk</span> 54°-os.`, focus: ['kerekpar'], revealAngles: { kerekpar: '54°' }, forcePreShift: true, forcePreShiftStart: true },
+        { main: `Ezért a <span style="color:${colorById['egyeb']}; font-weight:600;">szürke szelet</span> 72° - 54°-ból adódik.`, focus: ['egyeb'], forcePreShift: true },
+        { main: `<span style="color:${colorById['egyeb']}; font-weight:600;">72° - 54° = ${greyAngle}°</span>.`, focus: ['egyeb'], revealAngles: { egyeb: `${greyAngle}°` }, forcePreShift: true },
+        { main: `A 54°-os <span style="color:${colorById['kerekpar']}; font-weight:600;">sárga szelet</span> ${formatInteger.format(yellowStudentCount)} diákot jelent.`, focus: ['kerekpar'], forcePreShift: true },
+        { main: `\\( \\frac{${formatInteger.format(yellowStudentCount)}}{54^\\circ} = ${perDegreeText} \\)`, focus: ['kerekpar'], forcePreShift: true },
+        { main: `Így 1° ${perDegreeSymbol} ${perDegreeText} diák.`, focus: ['kerekpar'], forcePreShift: true },
+        { main: `A <span style="color:${colorById['busz']}; font-weight:600;">kék szelet</span>: 144° · ${perDegreeText} = ${formatInteger.format(counts['busz'])} diák.`, focus: ['busz'], revealQuantities: { busz: counts['busz'] }, forcePreShift: true },
+        { main: `A <span style="color:${colorById['gyalog']}; font-weight:600;">piros szelet</span>: 90° · ${perDegreeText} = ${formatInteger.format(counts['gyalog'])} diák.`, focus: ['gyalog'], revealQuantities: { gyalog: counts['gyalog'] }, forcePreShift: true },
+        { main: `A <span style="color:${colorById['auto']}; font-weight:600;">zöld szelet</span>: 54° · ${perDegreeText} = ${formatInteger.format(counts['auto'])} diák.`, focus: ['auto'], revealQuantities: { auto: counts['auto'] }, forcePreShift: true },
+        { main: `A <span style="color:${colorById['egyeb']}; font-weight:600;">szürke szelet</span>: ${greyAngle}° · ${perDegreeText} = ${formatInteger.format(counts['egyeb'])} diák.`, focus: ['egyeb'], revealQuantities: { egyeb: counts['egyeb'] }, forcePreShift: true },
+        { main: `Összesen ${formatInteger.format(totalStudents)} diák szerepel a kördiagrammon.`, focus: null, forcePreShift: true },
+        { main: 'Feladat: számoljuk ki, hogy a körcikkek hány %-ot jelentenek.', focus: null, forcePreShift: true },
+        { main: `A <span style="color:${colorById['busz']}; font-weight:600;">kék szelet</span>: \\( \\frac{${counts['busz']}}{${totalStudents}} \\cdot 100\\% \\) = ${formatPercent.format(percentages['busz'])}%.`, focus: ['busz'], revealPercents: { busz: `${formatPercent.format(percentages['busz'])}%` }, forcePreShift: true },
+        { main: `A <span style="color:${colorById['gyalog']}; font-weight:600;">piros szelet</span>: \\( \\frac{${counts['gyalog']}}{${totalStudents}} \\cdot 100\\% \\) = ${formatPercent.format(percentages['gyalog'])}%.`, focus: ['gyalog'], revealPercents: { gyalog: `${formatPercent.format(percentages['gyalog'])}%` }, forcePreShift: true },
+        { main: `A <span style="color:${colorById['kerekpar']}; font-weight:600;">sárga szelet</span>: \\( \\frac{${counts['kerekpar']}}{${totalStudents}} \\cdot 100\\% \\) = ${formatPercent.format(percentages['kerekpar'])}%.`, focus: ['kerekpar'], revealPercents: { kerekpar: `${formatPercent.format(percentages['kerekpar'])}%` }, forcePreShift: true },
+        { main: `A <span style="color:${colorById['auto']}; font-weight:600;">zöld szelet</span>: \\( \\frac{${counts['auto']}}{${totalStudents}} \\cdot 100\\% \\) = ${formatPercent.format(percentages['auto'])}%.`, focus: ['auto'], revealPercents: { auto: `${formatPercent.format(percentages['auto'])}%` }, forcePreShift: true },
+        { main: `A <span style="color:${colorById['egyeb']}; font-weight:600;">szürke szelet</span>: \\( \\frac{${counts['egyeb']}}{${totalStudents}} \\cdot 100\\% \\) = ${formatPercent.format(percentages['egyeb'])}%.`, focus: ['egyeb'], revealPercents: { egyeb: `${formatPercent.format(percentages['egyeb'])}%` }, forcePreShift: true },
+        { main: `Ellenőrzés: ${formatPercent.format(percentages['busz'])}% + ${formatPercent.format(percentages['gyalog'])}% + ${formatPercent.format(percentages['kerekpar'])}% + ${formatPercent.format(percentages['auto'])}% + ${formatPercent.format(percentages['egyeb'])}% = 100%.`, focus: null, forcePreShift: true },
+        { main: `Válasz: a körcikkek rendre ${formatPercent.format(percentages['busz'])}%, ${formatPercent.format(percentages['gyalog'])}%, ${formatPercent.format(percentages['kerekpar'])}%, ${formatPercent.format(percentages['auto'])}%, ${formatPercent.format(percentages['egyeb'])}% arányt képviselnek.`, focus: null, forcePreShift: true }
+      ];
+      steps.forEach(step => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+        }
+      });
+      return {
+        title: '1. feladat – Hogyan járnak iskolába a diákok?',
+        themeClass: 'task-theme-1',
+        slices,
+        counts,
+        percentages,
+        perDegreeText,
+        perDegreeSymbol,
+        steps,
+        unitLabel: 'diák',
+        formatQuantity: value => `${formatInteger.format(value)} diák`,
+        summary: {
+          columns: ['Közlekedési mód', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.detail, `${slice.percent}%`, `${slice.angle_deg}°`])
+        },
+        altText: 'Kördiagram az iskolába járás módjairól: busz 40%, gyalog 25%, kerékpár 15%, autó 15%, egyéb 5%.'
+      };
+    }
+    function createTask2() {
+      const slices = [
+        { id: 'etcsoki', label: 'Étcsokoládé', angle_deg: 108, percent: 30, display_angle: '?', color: 'rgb(90,45,30)', detail: 'Étcsokoládé táblák' },
+        { id: 'tejcsoki', label: 'Tejcsokoládé', angle_deg: 72, percent: 20, display_angle: '?', color: 'rgb(180,120,90)', detail: 'Tejcsokoládé táblák' },
+        { id: 'mogyoros', label: 'Mogyorós', angle_deg: 54, percent: 15, display_angle: '?', color: 'rgb(200,150,80)', detail: 'Mogyorós táblák' },
+        { id: 'karamell', label: 'Karamellás', angle_deg: 45, percent: 12.5, display_angle: '?', color: 'rgb(215,140,70)', detail: 'Karamellás táblák' },
+        { id: 'eper', label: 'Epres', angle_deg: 36, percent: 10, display_angle: '?', color: 'rgb(240,90,120)', detail: 'Epres táblák' },
+        { id: 'narancs', label: 'Narancsos', angle_deg: 27, percent: 7.5, display_angle: '?', color: 'rgb(255,165,60)', detail: 'Narancsos táblák' },
+        { id: 'kokusz', label: 'Kókuszos', angle_deg: 18, percent: 5, display_angle: '?', color: 'rgb(220,220,220)', detail: 'Kókuszos táblák' }
+      ];
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const total = 72000;
+      const perDegree = total / 360;
+      const perDegreeText = formatInteger.format(perDegree);
+      const counts = {
+        etcsoki: slices[0].angle_deg * perDegree,
+        tejcsoki: slices[1].angle_deg * perDegree,
+        mogyoros: slices[2].angle_deg * perDegree,
+        karamell: slices[3].angle_deg * perDegree,
+        eper: slices[4].angle_deg * perDegree,
+        narancs: slices[5].angle_deg * perDegree,
+        kokusz: slices[6].angle_deg * perDegree
+      };
+      const percentages = Object.fromEntries(
+        Object.entries(counts).map(([id, value]) => [id, (value / total) * 100])
+      );
+      const steps = [
+        { main: 'Egy csokigyár hetente 72 000 táblát készít hét ízben.', focus: null },
+        { main: `A <span style="color:${colorById['etcsoki']}; font-weight:600;">sötétbarna szelet</span> 108°-ot jelöl az étcsokoládé számára.`, focus: ['etcsoki'], revealAngles: { etcsoki: '108°' } },
+        { main: `A <span style="color:${colorById['tejcsoki']}; font-weight:600;">világosbarna szelet</span> 72°-os, ez a tejcsokoládé.`, focus: ['tejcsoki'], revealAngles: { tejcsoki: '72°' } },
+        { main: `A <span style="color:${colorById['mogyoros']}; font-weight:600;">mogyorós</span> változat 54°-ot kapott.`, focus: ['mogyoros'], revealAngles: { mogyoros: '54°' } },
+        { main: `A <span style="color:${colorById['karamell']}; font-weight:600;">karamellás</span> szelet 45°-os.`, focus: ['karamell'], revealAngles: { karamell: '45°' } },
+        { main: `A <span style="color:${colorById['eper']}; font-weight:600;">rózsaszín szelet</span> 36°-ot jelöl az epres tábláknak.`, focus: ['eper'], revealAngles: { eper: '36°' } },
+        { main: `A <span style="color:${colorById['narancs']}; font-weight:600;">narancssárga</span> szelet 27°-os.`, focus: ['narancs'], revealAngles: { narancs: '27°' } },
+        { main: `A <span style="color:${colorById['kokusz']}; font-weight:600;">szürke</span> szelet 18°-ot képvisel, ez a kókuszos íz.`, focus: ['kokusz'], revealAngles: { kokusz: '18°' } },
+        { main: '<span style="font-weight:600;">108° + 72° + 54° + 45° + 36° + 27° + 18° = 360°</span>, így minden íz szerepel.', focus: slices.map(slice => slice.id) },
+        { main: `\\( \\frac{72\,000}{360^\\circ} = ${perDegreeText} \\)`, focus: null, forcePreShift: true },
+        { main: `1° = ${perDegreeText} tábla csokoládé.`, focus: null, forcePreShift: true },
+        { main: `Étcsokoládé: 108° · ${perDegreeText} = ${formatInteger.format(counts['etcsoki'])} tábla.`, focus: ['etcsoki'], revealQuantities: { etcsoki: counts['etcsoki'] }, forcePreShift: true },
+        { main: `Tejcsokoládé: 72° · ${perDegreeText} = ${formatInteger.format(counts['tejcsoki'])} tábla.`, focus: ['tejcsoki'], revealQuantities: { tejcsoki: counts['tejcsoki'] }, forcePreShift: true },
+        { main: `Mogyorós: 54° · ${perDegreeText} = ${formatInteger.format(counts['mogyoros'])} tábla.`, focus: ['mogyoros'], revealQuantities: { mogyoros: counts['mogyoros'] }, forcePreShift: true },
+        { main: `Karamellás: 45° · ${perDegreeText} = ${formatInteger.format(counts['karamell'])} tábla.`, focus: ['karamell'], revealQuantities: { karamell: counts['karamell'] }, forcePreShift: true },
+        { main: `Epres: 36° · ${perDegreeText} = ${formatInteger.format(counts['eper'])} tábla.`, focus: ['eper'], revealQuantities: { eper: counts['eper'] }, forcePreShift: true },
+        { main: `Narancsos: 27° · ${perDegreeText} = ${formatInteger.format(counts['narancs'])} tábla.`, focus: ['narancs'], revealQuantities: { narancs: counts['narancs'] }, forcePreShift: true },
+        { main: `Kókuszos: 18° · ${perDegreeText} = ${formatInteger.format(counts['kokusz'])} tábla.`, focus: ['kokusz'], revealQuantities: { kokusz: counts['kokusz'] }, forcePreShift: true },
+        { main: 'Ellenőrzés: minden mennyiség összeadva 72 000 tábla.', focus: null, forcePreShift: true },
+        { main: 'Feladat: számoljuk ki, hogy az ízek hány %-ot jelentenek.', focus: null, forcePreShift: true },
+        { main: `Étcsokoládé: \\( \\frac{${counts['etcsoki']}}{72\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['etcsoki'])}%.`, focus: ['etcsoki'], revealPercents: { etcsoki: `${formatPercent.format(percentages['etcsoki'])}%` }, forcePreShift: true },
+        { main: `Tejcsokoládé: \\( \\frac{${counts['tejcsoki']}}{72\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['tejcsoki'])}%.`, focus: ['tejcsoki'], revealPercents: { tejcsoki: `${formatPercent.format(percentages['tejcsoki'])}%` }, forcePreShift: true },
+        { main: `Mogyorós: \\( \\frac{${counts['mogyoros']}}{72\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['mogyoros'])}%.`, focus: ['mogyoros'], revealPercents: { mogyoros: `${formatPercent.format(percentages['mogyoros'])}%` }, forcePreShift: true },
+        { main: `Karamellás: \\( \\frac{${counts['karamell']}}{72\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['karamell'])}%.`, focus: ['karamell'], revealPercents: { karamell: `${formatPercent.format(percentages['karamell'])}%` }, forcePreShift: true },
+        { main: `Epres: \\( \\frac{${counts['eper']}}{72\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['eper'])}%.`, focus: ['eper'], revealPercents: { eper: `${formatPercent.format(percentages['eper'])}%` }, forcePreShift: true },
+        { main: `Narancsos: \\( \\frac{${counts['narancs']}}{72\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['narancs'])}%.`, focus: ['narancs'], revealPercents: { narancs: `${formatPercent.format(percentages['narancs'])}%` }, forcePreShift: true },
+        { main: `Kókuszos: \\( \\frac{${counts['kokusz']}}{72\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['kokusz'])}%.`, focus: ['kokusz'], revealPercents: { kokusz: `${formatPercent.format(percentages['kokusz'])}%` }, forcePreShift: true },
+        { main: `Ellenőrzés: ${formatPercent.format(percentages['etcsoki'])}% + ${formatPercent.format(percentages['tejcsoki'])}% + ${formatPercent.format(percentages['mogyoros'])}% + ${formatPercent.format(percentages['karamell'])}% + ${formatPercent.format(percentages['eper'])}% + ${formatPercent.format(percentages['narancs'])}% + ${formatPercent.format(percentages['kokusz'])}% = 100%.`, focus: null, forcePreShift: true },
+        { main: `Válasz: az ízek arányai rendre ${formatPercent.format(percentages['etcsoki'])}%, ${formatPercent.format(percentages['tejcsoki'])}%, ${formatPercent.format(percentages['mogyoros'])}%, ${formatPercent.format(percentages['karamell'])}%, ${formatPercent.format(percentages['eper'])}%, ${formatPercent.format(percentages['narancs'])}%, ${formatPercent.format(percentages['kokusz'])}%.`, focus: null, forcePreShift: true }
+      ];
+      steps.forEach(step => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+        }
+      });
+      return {
+        title: '2. feladat – Csokigyár ízei',
+        themeClass: 'task-theme-2',
+        slices,
+        counts,
+        percentages,
+        perDegreeText,
+        perDegreeSymbol: '=',
+        steps,
+        unitLabel: 'tábla',
+        formatQuantity: value => `${formatInteger.format(value)} tábla`,
+        summary: {
+          columns: ['Íz', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.label, `${formatPercent.format(slice.percent)}%`, `${slice.angle_deg}°`])
+        },
+        altText: 'Kördiagram a csokoládégyár heti termeléséről: étcsokoládé 30%, tejcsokoládé 20%, mogyorós 15%, karamellás 12,5%, epres 10%, narancsos 7,5%, kókuszos 5%.'
+      };
+    }
+    function createTask3() {
+      const slices = [
+        { id: 'kutatas', label: 'Kutatás-fejlesztés', angle_deg: 126, percent: 35, display_angle: '?', color: 'rgb(0,118,168)', detail: 'K+F keret' },
+        { id: 'marketing', label: 'Marketing', angle_deg: 90, percent: 25, display_angle: '?', color: 'rgb(0,168,209)', detail: 'Marketing kiadások' },
+        { id: 'mukodes', label: 'Működés', angle_deg: 72, percent: 20, display_angle: '?', color: 'rgb(38,198,218)', detail: 'Üzemeltetés' },
+        { id: 'it', label: 'Informatikai fejlesztés', angle_deg: 36, percent: 10, display_angle: '?', color: 'rgb(0,191,165)', detail: 'IT fejlesztés' },
+        { id: 'kepzes', label: 'Képzés', angle_deg: 24, percent: 6.6667, display_angle: '?', color: 'rgb(0,150,136)', detail: 'Képzési programok' },
+        { id: 'tartalek', label: 'Tartalék', angle_deg: 12, percent: 3.3333, display_angle: '?', color: 'rgb(0,105,92)', detail: 'Tartalék alap' }
+      ];
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const total = 9000000000;
+      const perDegree = total / 360;
+      const perDegreeText = formatInteger.format(perDegree);
+      const counts = {
+        kutatas: slices[0].angle_deg * perDegree,
+        marketing: slices[1].angle_deg * perDegree,
+        mukodes: slices[2].angle_deg * perDegree,
+        it: slices[3].angle_deg * perDegree,
+        kepzes: slices[4].angle_deg * perDegree,
+        tartalek: slices[5].angle_deg * perDegree
+      };
+      const percentages = Object.fromEntries(
+        Object.entries(counts).map(([id, value]) => [id, (value / total) * 100])
+      );
+      const steps = [
+        { main: 'Egy technológiai cég negyedéves költségvetése 9 milliárd forint.', focus: null },
+        { main: `A <span style="color:${colorById['kutatas']}; font-weight:600;">sötétkék szelet</span> 126°-ot jelöl a kutatás-fejlesztésre.`, focus: ['kutatas'], revealAngles: { kutatas: '126°' } },
+        { main: `A <span style="color:${colorById['marketing']}; font-weight:600;">kék szelet</span> 90°-os, ez a marketing.`, focus: ['marketing'], revealAngles: { marketing: '90°' } },
+        { main: `A <span style="color:${colorById['mukodes']}; font-weight:600;">világos kékeszöld</span> szelet 72°-ot jelent a működéshez.`, focus: ['mukodes'], revealAngles: { mukodes: '72°' } },
+        { main: `Az <span style="color:${colorById['it']}; font-weight:600;">IT-fejlesztés</span> 36°-on osztozik.`, focus: ['it'], revealAngles: { it: '36°' } },
+        { main: `A <span style="color:${colorById['kepzes']}; font-weight:600;">képzés</span> 24°-os szeletet kapott.`, focus: ['kepzes'], revealAngles: { kepzes: '24°' } },
+        { main: `A <span style="color:${colorById['tartalek']}; font-weight:600;">tartalék</span> 12°-ot képvisel.`, focus: ['tartalek'], revealAngles: { tartalek: '12°' } },
+        { main: '<span style="font-weight:600;">126° + 90° + 72° + 36° + 24° + 12° = 360°</span>, így minden forrás el lett osztva.', focus: slices.map(slice => slice.id) },
+        { main: `\\( \\frac{9\,000\,000\,000}{360^\\circ} = ${perDegreeText} \\)`, focus: null, forcePreShift: true },
+        { main: `1° = ${perDegreeText} Ft.`, focus: null, forcePreShift: true },
+        { main: `Kutatás-fejlesztés: 126° · ${perDegreeText} = ${formatInteger.format(counts['kutatas'])} Ft.`, focus: ['kutatas'], revealQuantities: { kutatas: counts['kutatas'] }, forcePreShift: true },
+        { main: `Marketing: 90° · ${perDegreeText} = ${formatInteger.format(counts['marketing'])} Ft.`, focus: ['marketing'], revealQuantities: { marketing: counts['marketing'] }, forcePreShift: true },
+        { main: `Működés: 72° · ${perDegreeText} = ${formatInteger.format(counts['mukodes'])} Ft.`, focus: ['mukodes'], revealQuantities: { mukodes: counts['mukodes'] }, forcePreShift: true },
+        { main: `IT-fejlesztés: 36° · ${perDegreeText} = ${formatInteger.format(counts['it'])} Ft.`, focus: ['it'], revealQuantities: { it: counts['it'] }, forcePreShift: true },
+        { main: `Képzés: 24° · ${perDegreeText} = ${formatInteger.format(counts['kepzes'])} Ft.`, focus: ['kepzes'], revealQuantities: { kepzes: counts['kepzes'] }, forcePreShift: true },
+        { main: `Tartalék: 12° · ${perDegreeText} = ${formatInteger.format(counts['tartalek'])} Ft.`, focus: ['tartalek'], revealQuantities: { tartalek: counts['tartalek'] }, forcePreShift: true },
+        { main: 'Ellenőrzés: a hat kategória összege 9 milliárd Ft.', focus: null, forcePreShift: true },
+        { main: 'Feladat: számoljuk ki, hogy a keretek hány %-ot tesznek ki.', focus: null, forcePreShift: true },
+        { main: `Kutatás-fejlesztés: \\( \\frac{${counts['kutatas']}}{9\,000\,000\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['kutatas'])}%.`, focus: ['kutatas'], revealPercents: { kutatas: `${formatPercent.format(percentages['kutatas'])}%` }, forcePreShift: true },
+        { main: `Marketing: \\( \\frac{${counts['marketing']}}{9\,000\,000\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['marketing'])}%.`, focus: ['marketing'], revealPercents: { marketing: `${formatPercent.format(percentages['marketing'])}%` }, forcePreShift: true },
+        { main: `Működés: \\( \\frac{${counts['mukodes']}}{9\,000\,000\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['mukodes'])}%.`, focus: ['mukodes'], revealPercents: { mukodes: `${formatPercent.format(percentages['mukodes'])}%` }, forcePreShift: true },
+        { main: `IT-fejlesztés: \\( \\frac{${counts['it']}}{9\,000\,000\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['it'])}%.`, focus: ['it'], revealPercents: { it: `${formatPercent.format(percentages['it'])}%` }, forcePreShift: true },
+        { main: `Képzés: \\( \\frac{${counts['kepzes']}}{9\,000\,000\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['kepzes'])}%.`, focus: ['kepzes'], revealPercents: { kepzes: `${formatPercent.format(percentages['kepzes'])}%` }, forcePreShift: true },
+        { main: `Tartalék: \\( \\frac{${counts['tartalek']}}{9\,000\,000\,000} \\cdot 100\\% \\) = ${formatPercent.format(percentages['tartalek'])}%.`, focus: ['tartalek'], revealPercents: { tartalek: `${formatPercent.format(percentages['tartalek'])}%` }, forcePreShift: true },
+        { main: `Ellenőrzés: ${formatPercent.format(percentages['kutatas'])}% + ${formatPercent.format(percentages['marketing'])}% + ${formatPercent.format(percentages['mukodes'])}% + ${formatPercent.format(percentages['it'])}% + ${formatPercent.format(percentages['kepzes'])}% + ${formatPercent.format(percentages['tartalek'])}% = 100%.`, focus: null, forcePreShift: true },
+        { main: `Válasz: a keretek arányai ${formatPercent.format(percentages['kutatas'])}%, ${formatPercent.format(percentages['marketing'])}%, ${formatPercent.format(percentages['mukodes'])}%, ${formatPercent.format(percentages['it'])}%, ${formatPercent.format(percentages['kepzes'])}%, ${formatPercent.format(percentages['tartalek'])}%.`, focus: null, forcePreShift: true }
+      ];
+      steps.forEach(step => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+        }
+      });
+      return {
+        title: '3. feladat – Vállalati költségvetés',
+        themeClass: 'task-theme-3',
+        slices,
+        counts,
+        percentages,
+        perDegreeText,
+        perDegreeSymbol: '=',
+        steps,
+        unitLabel: 'Ft',
+        formatQuantity: value => `${formatInteger.format(value)} Ft`,
+        summary: {
+          columns: ['Költségvetési elem', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.label, `${formatPercent.format(slice.percent)}%`, `${slice.angle_deg}°`])
+        },
+        altText: 'Kördiagram egy vállalat költségvetéséről: kutatás-fejlesztés 35%, marketing 25%, működés 20%, IT 10%, képzés 6,7%, tartalék 3,3%.'
+      };
+    }
+    function createTask4() {
+      const slices = [
+        { id: 'megfigyeles', label: 'Csillagvizsgálat', angle_deg: 120, percent: 33.333, display_angle: '?', color: 'rgb(120,110,255)', detail: 'Éjszakai megfigyelés' },
+        { id: 'szimulator', label: 'Szimulátoros tréning', angle_deg: 72, percent: 20, display_angle: '?', color: 'rgb(180,140,255)', detail: 'Szimulátoros órák' },
+        { id: 'labor', label: 'Laborfeladatok', angle_deg: 60, percent: 16.667, display_angle: '?', color: 'rgb(150,200,255)', detail: 'Laboridő' },
+        { id: 'eloadas', label: 'Előadások', angle_deg: 48, percent: 13.333, display_angle: '?', color: 'rgb(100,220,200)', detail: 'Elméleti blokkok' },
+        { id: 'mozgas', label: 'Űrhajós tréning', angle_deg: 36, percent: 10, display_angle: '?', color: 'rgb(120,210,160)', detail: 'Fizikai edzés' },
+        { id: 'pihenes', label: 'Pihenő', angle_deg: 24, percent: 6.667, display_angle: '?', color: 'rgb(200,200,220)', detail: 'Pihenőidő' }
+      ];
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const totalMinutes = 1080;
+      const perDegree = totalMinutes / 360;
+      const perDegreeText = formatInteger.format(perDegree);
+      const counts = {
+        megfigyeles: slices[0].angle_deg * perDegree,
+        szimulator: slices[1].angle_deg * perDegree,
+        labor: slices[2].angle_deg * perDegree,
+        eloadas: slices[3].angle_deg * perDegree,
+        mozgas: slices[4].angle_deg * perDegree,
+        pihenes: slices[5].angle_deg * perDegree
+      };
+      const percentages = Object.fromEntries(
+        Object.entries(counts).map(([id, value]) => [id, (value / totalMinutes) * 100])
+      );
+      const steps = [
+        { main: 'Egy űrtábor napi programja 1080 percet, vagyis 18 órát tölt meg.', focus: null },
+        { main: `A <span style="color:${colorById['megfigyeles']}; font-weight:600;">lila szelet</span> 120°-ot jelent a csillagvizsgálatra.`, focus: ['megfigyeles'], revealAngles: { megfigyeles: '120°' } },
+        { main: `A <span style="color:${colorById['szimulator']}; font-weight:600;">bíbor szelet</span> 72°-ot mutat a szimulátoros tréningre.`, focus: ['szimulator'], revealAngles: { szimulator: '72°' } },
+        { main: `A <span style="color:${colorById['labor']}; font-weight:600;">kékeszöld szelet</span> 60°-os, ez a laboridő.`, focus: ['labor'], revealAngles: { labor: '60°' } },
+        { main: `Az <span style="color:${colorById['eloadas']}; font-weight:600;">előadások</span> 48°-ot foglalnak el.`, focus: ['eloadas'], revealAngles: { eloadas: '48°' } },
+        { main: `A <span style="color:${colorById['mozgas']}; font-weight:600;">tréning</span> 36°-nyi időt kap.`, focus: ['mozgas'], revealAngles: { mozgas: '36°' } },
+        { main: `A <span style="color:${colorById['pihenes']}; font-weight:600;">pihenő</span> 24°-os szeletet jelent.`, focus: ['pihenes'], revealAngles: { pihenes: '24°' } },
+        { main: '<span style="font-weight:600;">120° + 72° + 60° + 48° + 36° + 24° = 360°</span>, így lefedjük az egész napot.', focus: slices.map(slice => slice.id) },
+        { main: `\\( \\frac{1\,080}{360^\\circ} = ${perDegreeText} \\)`, focus: null, forcePreShift: true },
+        { main: `1° = ${perDegreeText} perc.`, focus: null, forcePreShift: true },
+        { main: `Csillagvizsgálat: 120° · ${perDegreeText} = ${formatInteger.format(counts['megfigyeles'])} perc.`, focus: ['megfigyeles'], revealQuantities: { megfigyeles: counts['megfigyeles'] }, forcePreShift: true },
+        { main: `Szimulátor: 72° · ${perDegreeText} = ${formatInteger.format(counts['szimulator'])} perc.`, focus: ['szimulator'], revealQuantities: { szimulator: counts['szimulator'] }, forcePreShift: true },
+        { main: `Labor: 60° · ${perDegreeText} = ${formatInteger.format(counts['labor'])} perc.`, focus: ['labor'], revealQuantities: { labor: counts['labor'] }, forcePreShift: true },
+        { main: `Előadások: 48° · ${perDegreeText} = ${formatInteger.format(counts['eloadas'])} perc.`, focus: ['eloadas'], revealQuantities: { eloadas: counts['eloadas'] }, forcePreShift: true },
+        { main: `Tréning: 36° · ${perDegreeText} = ${formatInteger.format(counts['mozgas'])} perc.`, focus: ['mozgas'], revealQuantities: { mozgas: counts['mozgas'] }, forcePreShift: true },
+        { main: `Pihenő: 24° · ${perDegreeText} = ${formatInteger.format(counts['pihenes'])} perc.`, focus: ['pihenes'], revealQuantities: { pihenes: counts['pihenes'] }, forcePreShift: true },
+        { main: 'Ellenőrzés: a percek összege 1080 perc, azaz 18 óra.', focus: null, forcePreShift: true },
+        { main: 'Feladat: számoljuk ki, hogy a programblokkok hány %-ot jelentenek.', focus: null, forcePreShift: true },
+        { main: `Csillagvizsgálat: \\( \\frac{${counts['megfigyeles']}}{1\,080} \\cdot 100\\% \\) = ${formatPercent.format(percentages['megfigyeles'])}%.`, focus: ['megfigyeles'], revealPercents: { megfigyeles: `${formatPercent.format(percentages['megfigyeles'])}%` }, forcePreShift: true },
+        { main: `Szimulátor: \\( \\frac{${counts['szimulator']}}{1\,080} \\cdot 100\\% \\) = ${formatPercent.format(percentages['szimulator'])}%.`, focus: ['szimulator'], revealPercents: { szimulator: `${formatPercent.format(percentages['szimulator'])}%` }, forcePreShift: true },
+        { main: `Labor: \\( \\frac{${counts['labor']}}{1\,080} \\cdot 100\\% \\) = ${formatPercent.format(percentages['labor'])}%.`, focus: ['labor'], revealPercents: { labor: `${formatPercent.format(percentages['labor'])}%` }, forcePreShift: true },
+        { main: `Előadások: \\( \\frac{${counts['eloadas']}}{1\,080} \\cdot 100\\% \\) = ${formatPercent.format(percentages['eloadas'])}%.`, focus: ['eloadas'], revealPercents: { eloadas: `${formatPercent.format(percentages['eloadas'])}%` }, forcePreShift: true },
+        { main: `Tréning: \\( \\frac{${counts['mozgas']}}{1\,080} \\cdot 100\\% \\) = ${formatPercent.format(percentages['mozgas'])}%.`, focus: ['mozgas'], revealPercents: { mozgas: `${formatPercent.format(percentages['mozgas'])}%` }, forcePreShift: true },
+        { main: `Pihenő: \\( \\frac{${counts['pihenes']}}{1\,080} \\cdot 100\\% \\) = ${formatPercent.format(percentages['pihenes'])}%.`, focus: ['pihenes'], revealPercents: { pihenes: `${formatPercent.format(percentages['pihenes'])}%` }, forcePreShift: true },
+        { main: `Ellenőrzés: ${formatPercent.format(percentages['megfigyeles'])}% + ${formatPercent.format(percentages['szimulator'])}% + ${formatPercent.format(percentages['labor'])}% + ${formatPercent.format(percentages['eloadas'])}% + ${formatPercent.format(percentages['mozgas'])}% + ${formatPercent.format(percentages['pihenes'])}% = 100%.`, focus: null, forcePreShift: true },
+        { main: `Válasz: a programrészek arányai ${formatPercent.format(percentages['megfigyeles'])}%, ${formatPercent.format(percentages['szimulator'])}%, ${formatPercent.format(percentages['labor'])}%, ${formatPercent.format(percentages['eloadas'])}%, ${formatPercent.format(percentages['mozgas'])}%, ${formatPercent.format(percentages['pihenes'])}%.`, focus: null, forcePreShift: true }
+      ];
+      steps.forEach(step => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+        }
+      });
+      return {
+        title: '4. feladat – Űrtábor napi programja',
+        themeClass: 'task-theme-4',
+        slices,
+        counts,
+        percentages,
+        perDegreeText,
+        perDegreeSymbol: '=',
+        steps,
+        unitLabel: 'perc',
+        formatQuantity: value => `${formatInteger.format(value)} perc`,
+        summary: {
+          columns: ['Program', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.label, `${formatPercent.format(slice.percent)}%`, `${slice.angle_deg}°`])
+        },
+        altText: 'Kördiagram az űrtábor napi programjáról: csillagvizsgálat 33%, szimulátor 20%, labor 16,7%, előadások 13,3%, tréning 10%, pihenő 6,7%.'
+      };
+    }
+    const tasks = [createTask1(), createTask2(), createTask3(), createTask4()];
+
+    let currentTaskIndex = 0;
+    let currentTask = tasks[0];
+    let data = [];
+    let steps = [];
+    let counts = {};
+    let percentages = {};
+    let perDegreeText = '';
+    let perDegreeSymbol = '=';
+    let formatQuantity = value => formatInteger.format(value);
+    let initialAngleLabels = {};
+    let colorById = {};
+
+    let angleSpanMap = {};
+    let quantityLineMap = {};
+    let percentLineMap = {};
+    let infoEntries = [];
+    let slicesSelection = null;
+
+    const stepMain = document.getElementById('step-main');
+    const stepLines = document.getElementById('step-lines');
+    let stepLineElements = [];
+    let currentStep = -1;
+    let pendingLines = new Set();
+    let stepLinesOffset = 0;
+    let targetStepLinesOffset = 0;
+    let maxStepLinesOffset = 0;
+    let scrollAnimationFrame = null;
+    let previousContentHeight = 0;
+
+    const BASE_FONT_PT = 40;
+    const FONT_STEP_PT = 4;
+    const MIN_FONT_PT = 22;
+    const BASE_BOTTOM_PT = 22;
+    const LINE_GAP_PT = 12;
+    const EXTRA_GAP_PT = 16;
+    const PRE_RAISE_PT = 26;
+    const DOUBLE_LINE_PRE_RAISE_EXTRA_PT = 10;
+    const POSITION_SMOOTHING = 0.22;
+    const POSITION_EPSILON = 0.6;
+
+    let lineAnimationStates = new Map();
+    let lineAnimationFrame = null;
+
+    function ptToPx(pt) {
+      return (pt * 96) / 72;
+    }
+
+    function stopLineAnimations() {
+      if (lineAnimationFrame) {
+        cancelAnimationFrame(lineAnimationFrame);
+        lineAnimationFrame = null;
+      }
+      lineAnimationStates.clear();
+    }
+
+    function scheduleLinePosition(line, targetBottom, immediate = false) {
+      if (!line) {
+        return;
+      }
+
+      let state = lineAnimationStates.get(line);
+      const stored = parseFloat(line.dataset.currentBottom);
+      const initialBottom = Number.isFinite(stored) ? stored : targetBottom;
+
+      if (!state) {
+        state = { line, current: initialBottom, target: targetBottom };
+        lineAnimationStates.set(line, state);
+      } else {
+        state.target = targetBottom;
+      }
+
+      if (immediate) {
+        state.current = targetBottom;
+        state.target = targetBottom;
+        line.style.bottom = `${targetBottom}px`;
+        line.dataset.currentBottom = `${targetBottom}`;
+        lineAnimationStates.delete(line);
+        return;
+      }
+
+      if (!Number.isFinite(state.current)) {
+        state.current = targetBottom;
+      }
+
+      line.style.bottom = `${state.current}px`;
+      line.dataset.currentBottom = `${state.current}`;
+      state.target = targetBottom;
+
+      if (!lineAnimationFrame) {
+        lineAnimationFrame = requestAnimationFrame(stepLineAnimations);
+      }
+    }
+
+    function stepLineAnimations() {
+      let shouldContinue = false;
+      lineAnimationStates.forEach((state, lineEl) => {
+        const line = state.line;
+        if (!line || !line.isConnected) {
+          lineAnimationStates.delete(lineEl);
+          return;
+        }
+
+        const diff = state.target - state.current;
+        if (Math.abs(diff) <= POSITION_EPSILON) {
+          state.current = state.target;
+          line.style.bottom = `${state.current}px`;
+          line.dataset.currentBottom = `${state.current}`;
+          lineAnimationStates.delete(lineEl);
+          return;
+        }
+
+        state.current += diff * POSITION_SMOOTHING;
+        line.style.bottom = `${state.current}px`;
+        line.dataset.currentBottom = `${state.current}`;
+        shouldContinue = true;
+      });
+
+      if (shouldContinue) {
+        lineAnimationFrame = requestAnimationFrame(stepLineAnimations);
+      } else {
+        lineAnimationFrame = null;
+      }
+    }
+    function triggerLineEntrance(line) {
+      if (!line || !line.classList.contains('entering')) {
+        return;
+      }
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          line.classList.remove('entering');
+        });
+      });
+    }
+
+    function createNarrationLine(step, animate) {
+      const line = document.createElement('div');
+      line.className = 'step-line';
+      if (animate) {
+        line.classList.add('entering');
+      }
+      line.innerHTML = step.main;
+      const plainText = (line.textContent || '').replace(/\s+/g, ' ').trim();
+      const needsExtraGap = Boolean(step.extraGap) || plainText.includes('=') || step.main.includes('\\frac');
+      line.dataset.extraGap = needsExtraGap ? 'true' : 'false';
+      line.dataset.preRaise = step.preRaise ? 'true' : 'false';
+      stepLines.appendChild(line);
+      typesetNode(line);
+      return line;
+    }
+
+    function syncNarration(maxIndex, animateNewest) {
+      if (maxIndex < 0) {
+        stopLineAnimations();
+        stepLineElements.forEach(line => {
+          if (line && line.isConnected) {
+            line.remove();
+          }
+        });
+        stepLineElements = [];
+        pendingLines.clear();
+        stepLinesOffset = 0;
+        targetStepLinesOffset = 0;
+        updateStepLinesTransform();
+        return;
+      }
+
+      while (stepLineElements.length <= maxIndex) {
+        stepLineElements.push(null);
+      }
+
+      for (let i = 0; i <= maxIndex; i++) {
+        if (!stepLineElements[i]) {
+          stepLineElements[i] = createNarrationLine(steps[i], animateNewest && i === maxIndex);
+        }
+      }
+    }
+
+    function cleanupNarration(containerRect) {
+      stepLineElements = stepLineElements.filter(line => {
+        if (!line || !line.isConnected) {
+          lineAnimationStates.delete(line);
+          return false;
+        }
+        const rect = line.getBoundingClientRect();
+        if (rect.bottom < containerRect.top - 40) {
+          lineAnimationStates.delete(line);
+          line.remove();
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function updateStepLinesTransform() {
+      stepLines.style.transform = `translateY(-${stepLinesOffset}px)`;
+    }
+
+    function smoothScrollFrame() {
+      const difference = targetStepLinesOffset - stepLinesOffset;
+      if (Math.abs(difference) < 0.4) {
+        stepLinesOffset = targetStepLinesOffset;
+        updateStepLinesTransform();
+        revealPendingLines();
+        scrollAnimationFrame = null;
+        return;
+      }
+      stepLinesOffset += difference * 0.12;
+      updateStepLinesTransform();
+      scrollAnimationFrame = requestAnimationFrame(smoothScrollFrame);
+    }
+
+    function setScrollTarget(offset, immediate = false) {
+      const clamped = Math.max(0, Math.min(offset, maxStepLinesOffset));
+      targetStepLinesOffset = clamped;
+      if (immediate) {
+        if (scrollAnimationFrame) {
+          cancelAnimationFrame(scrollAnimationFrame);
+          scrollAnimationFrame = null;
+        }
+        stepLinesOffset = clamped;
+        updateStepLinesTransform();
+        revealPendingLines();
+        return;
+      }
+      if (!scrollAnimationFrame) {
+        scrollAnimationFrame = requestAnimationFrame(smoothScrollFrame);
+      }
+    }
+
+    function revealPendingLines() {
+      if (!pendingLines.size) {
+        return;
+      }
+      pendingLines.forEach(line => {
+        if (line && line.isConnected) {
+          line.classList.remove('pending-entry');
+          triggerLineEntrance(line);
+        }
+      });
+      pendingLines.clear();
+    }
+    function ensureActiveLineVisible(appended = false, immediateOverride = false, previousHeight = null, index = -1) {
+      const activeLine = stepLineElements[currentStep];
+      const containerHeight = stepMain.clientHeight;
+      const contentHeight = stepLines.scrollHeight;
+      maxStepLinesOffset = Math.max(0, contentHeight - containerHeight);
+      if (!activeLine) {
+        previousContentHeight = contentHeight;
+        setScrollTarget(0, immediateOverride);
+        return false;
+      }
+      const referenceOffset = Math.max(stepLinesOffset, targetStepLinesOffset);
+      let desiredOffset = referenceOffset;
+      const forcePreShift = index !== -1 && steps[index] && steps[index].forcePreShift;
+      if (appended) {
+        const referenceHeight = previousHeight ?? previousContentHeight ?? contentHeight;
+        const lineBottom = activeLine.offsetTop + activeLine.offsetHeight;
+        const extra = Math.max(0, contentHeight - referenceHeight);
+        if (forcePreShift && extra > 0) {
+          desiredOffset = Math.min(maxStepLinesOffset, referenceOffset + extra);
+        } else {
+          if (contentHeight > containerHeight) {
+            const preferredOffset = Math.max(0, Math.min(maxStepLinesOffset, lineBottom - containerHeight));
+            if (preferredOffset >= referenceOffset) {
+              desiredOffset = preferredOffset;
+            } else {
+              desiredOffset = Math.min(maxStepLinesOffset, referenceOffset + extra);
+            }
+          } else {
+            desiredOffset = 0;
+          }
+        }
+      } else {
+        const lineTop = activeLine.offsetTop;
+        const lineBottom = lineTop + activeLine.offsetHeight;
+        if (lineBottom - referenceOffset > containerHeight) {
+          desiredOffset = lineBottom - containerHeight;
+        } else if (lineTop - referenceOffset < 0) {
+          desiredOffset = lineTop;
+        } else {
+          desiredOffset = referenceOffset;
+        }
+      }
+      const delta = Math.abs(desiredOffset - referenceOffset);
+      setScrollTarget(desiredOffset, immediateOverride);
+      previousContentHeight = contentHeight;
+      return !immediateOverride && delta > 0.4;
+    }
+
+    function layoutNarration() {
+      const containerRect = stepMain.getBoundingClientRect();
+      const entries = stepLineElements
+        .map((line, index) => ({ line, index }))
+        .filter(entry => entry.line && entry.line.isConnected);
+      let bottomPx = ptToPx(BASE_BOTTOM_PT);
+      const total = entries.length;
+      for (let offset = 0; offset < total; offset++) {
+        const entry = entries[total - 1 - offset];
+        const line = entry.line;
+        const fontPt = Math.max(MIN_FONT_PT, BASE_FONT_PT - FONT_STEP_PT * offset);
+        line.style.fontSize = `${fontPt}pt`;
+        const hasExtraGap = line.dataset.extraGap === 'true';
+        const needsPreRaise = line.dataset.preRaise === 'true';
+        const measured = line.scrollHeight || line.offsetHeight || ptToPx(fontPt * 1.25);
+        const baselineMultiplier = hasExtraGap ? 1.4 : 1.2;
+        const effectiveHeight = Math.max(measured, ptToPx(fontPt * baselineMultiplier));
+        const gapPt = hasExtraGap ? LINE_GAP_PT + EXTRA_GAP_PT : LINE_GAP_PT;
+        let raisePx = 0;
+        if (needsPreRaise) {
+          raisePx += ptToPx(PRE_RAISE_PT);
+        }
+        if (hasExtraGap) {
+          raisePx += effectiveHeight + ptToPx(DOUBLE_LINE_PRE_RAISE_EXTRA_PT);
+        }
+        bottomPx += raisePx;
+        const immediate = !line.dataset.currentBottom;
+        scheduleLinePosition(line, bottomPx, immediate);
+        line.style.padding = hasExtraGap ? '4px 0 6px' : '0';
+        line.classList.toggle('active', entry.index === currentStep);
+        bottomPx += effectiveHeight + ptToPx(gapPt);
+      }
+      cleanupNarration(containerRect);
+    }
+    function buildInfoPanel() {
+      infoPanel.innerHTML = '';
+      angleSpanMap = {};
+      quantityLineMap = {};
+      percentLineMap = {};
+      infoEntries = data.map(item => {
+        const row = document.createElement('div');
+        row.className = 'info-item';
+        row.dataset.sliceId = item.id;
+        const marker = document.createElement('div');
+        marker.className = 'info-color';
+        marker.style.background = item.color;
+        const text = document.createElement('div');
+        text.className = 'info-text';
+        const heading = document.createElement('div');
+        heading.className = 'info-heading';
+        const angleSpan = document.createElement('span');
+        angleSpan.className = 'info-angle';
+        angleSpan.textContent = initialAngleLabels[item.id] ?? '?';
+        angleSpanMap[item.id] = angleSpan;
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'info-label';
+        labelSpan.textContent = item.detail;
+        heading.appendChild(angleSpan);
+        heading.appendChild(labelSpan);
+        const quantityLine = document.createElement('div');
+        quantityLine.className = 'info-quantity';
+        quantityLine.textContent = '—';
+        quantityLineMap[item.id] = quantityLine;
+        const percentLine = document.createElement('div');
+        percentLine.className = 'info-percent';
+        percentLine.textContent = '—';
+        percentLineMap[item.id] = percentLine;
+        text.appendChild(heading);
+        text.appendChild(quantityLine);
+        text.appendChild(percentLine);
+        row.appendChild(marker);
+        row.appendChild(text);
+        infoPanel.appendChild(row);
+        return { id: item.id, row };
+      });
+    }
+
+    function buildChart() {
+      chartContainer.innerHTML = '';
+      const chartSize = 560;
+      const radius = 220;
+      const svg = d3.select(chartContainer)
+        .append('svg')
+        .attr('viewBox', `0 0 ${chartSize} ${chartSize}`)
+        .attr('width', '100%')
+        .attr('height', '100%');
+      const chartGroup = svg.append('g')
+        .attr('transform', `translate(${chartSize / 2}, ${(chartSize / 2) - 50})`);
+      const arc = d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius)
+        .cornerRadius(6);
+      const pie = d3.pie()
+        .sort(null)
+        .startAngle(-Math.PI / 2)
+        .endAngle(3 * Math.PI / 2)
+        .value(d => d.percent);
+      const arcs = pie(data);
+      slicesSelection = chartGroup.selectAll('.slice-path')
+        .data(arcs)
+        .enter()
+        .append('path')
+        .attr('class', 'slice-path')
+        .attr('fill', d => d.data.color)
+        .attr('d', d => arc({ ...d, endAngle: d.startAngle }))
+        .each(function(d) { this._current = d; });
+      slicesSelection.transition()
+        .duration(600)
+        .attrTween('d', function(d) {
+          const interpolate = d3.interpolate({ startAngle: d.startAngle, endAngle: d.startAngle }, d);
+          return function(t) {
+            return arc(interpolate(t));
+          };
+        });
+    }
+
+    function applyHighlight(focusId) {
+      const focusIds = Array.isArray(focusId) ? focusId : (focusId ? [focusId] : []);
+      if (!slicesSelection) {
+        return;
+      }
+      slicesSelection.classed('highlighted', d => focusIds.includes(d.data.id));
+      slicesSelection.classed('dimmed', d => focusIds.length && !focusIds.includes(d.data.id));
+      if (!focusIds.length) {
+        slicesSelection.classed('dimmed', false);
+      }
+    }
+
+    function highlightInfo(focusId) {
+      const focusIds = Array.isArray(focusId) ? focusId : (focusId ? [focusId] : []);
+      infoEntries.forEach(entry => {
+        const isActive = focusIds.includes(entry.id);
+        entry.row.classList.toggle('active', isActive);
+      });
+    }
+
+    function applyReveals(index) {
+      Object.entries(initialAngleLabels).forEach(([id, label]) => {
+        const angleNode = angleSpanMap[id];
+        if (angleNode) {
+          angleNode.textContent = label;
+        }
+      });
+      Object.values(quantityLineMap).forEach(line => {
+        line.textContent = '—';
+      });
+      Object.values(percentLineMap).forEach(line => {
+        line.textContent = '—';
+      });
+      if (index < 0) {
+        return;
+      }
+      for (let i = 0; i <= index; i++) {
+        const step = steps[i];
+        if (!step) {
+          continue;
+        }
+        if (step.revealAngles) {
+          Object.entries(step.revealAngles).forEach(([id, value]) => {
+            const angleNode = angleSpanMap[id];
+            if (angleNode) {
+              angleNode.textContent = value;
+            }
+          });
+        }
+        if (step.revealQuantities) {
+          Object.entries(step.revealQuantities).forEach(([id, value]) => {
+            const quantityNode = quantityLineMap[id];
+            if (quantityNode) {
+              quantityNode.textContent = formatQuantity(value);
+            }
+          });
+        }
+        if (step.revealPercents) {
+          Object.entries(step.revealPercents).forEach(([id, value]) => {
+            const percentNode = percentLineMap[id];
+            if (percentNode) {
+              percentNode.textContent = value;
+            }
+          });
+        }
+      }
+    }
+
+    function updateSummary(task) {
+      altTextNode.textContent = task.altText;
+      summaryHeader.innerHTML = '';
+      task.summary.columns.forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        summaryHeader.appendChild(th);
+      });
+      summaryBody.innerHTML = '';
+      task.summary.rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        summaryBody.appendChild(tr);
+      });
+    }
+
+    function resetNarration() {
+      stopLineAnimations();
+      stepLines.innerHTML = '';
+      stepLineElements = [];
+      pendingLines = new Set();
+      currentStep = -1;
+      stepLinesOffset = 0;
+      targetStepLinesOffset = 0;
+      maxStepLinesOffset = 0;
+      updateStepLinesTransform();
+    }
+
+    function showStep(index, appended = false) {
+      const previousStep = currentStep;
+      currentStep = index;
+      if (index < 0) {
+        syncNarration(-1, false);
+        applyHighlight(null);
+        highlightInfo(null);
+        applyReveals(-1);
+        return;
+      }
+      const forward = previousStep === -1 || index > previousStep;
+      syncNarration(index, forward);
+      const line = stepLineElements[index];
+      if (appended && line) {
+        if (steps[index].forcePreShift) {
+          line.classList.add('pending-entry');
+          pendingLines.add(line);
+        } else {
+          line.classList.remove('pending-entry');
+          triggerLineEntrance(line);
+        }
+      }
+      layoutNarration();
+      const step = steps[index];
+      applyHighlight(step.focus);
+      highlightInfo(step.focus);
+      applyReveals(index);
+    }
+
+    function showPanelsIfHidden() {
+      if (visual.classList.contains('concealed')) {
+        visual.classList.remove('concealed');
+        visual.setAttribute('aria-hidden', 'false');
+      }
+      if (infoPanel.classList.contains('concealed')) {
+        infoPanel.classList.remove('concealed');
+        infoPanel.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function goToStep(index, appended) {
+      const priorHeight = stepLines.scrollHeight;
+      showStep(index, appended);
+      const needsScroll = ensureActiveLineVisible(appended, false, priorHeight, index);
+      if (appended && !needsScroll) {
+        revealPendingLines();
+      }
+    }
+
+    function advanceStep(delta) {
+      if (!steps.length) {
+        return;
+      }
+      if (currentStep === -1) {
+        if (delta > 0) {
+          showPanelsIfHidden();
+          goToStep(0, true);
+        }
+        return;
+      }
+
+      let nextIndex = currentStep + delta;
+
+      if (delta > 0 && nextIndex >= steps.length) {
+        if (currentTaskIndex < tasks.length - 1) {
+          loadTask(currentTaskIndex + 1);
+          if (steps.length) {
+            showPanelsIfHidden();
+            goToStep(0, true);
+          }
+        } else {
+          nextIndex = steps.length - 1;
+          if (nextIndex !== currentStep) {
+            showPanelsIfHidden();
+            goToStep(nextIndex, true);
+          }
+        }
+        return;
+      }
+
+      if (delta < 0 && nextIndex < 0) {
+        if (currentTaskIndex > 0) {
+          loadTask(currentTaskIndex - 1);
+          if (steps.length) {
+            showPanelsIfHidden();
+            const lastStepIndex = steps.length - 1;
+            goToStep(lastStepIndex, false);
+          }
+        }
+        return;
+      }
+
+      if (nextIndex < 0) {
+        nextIndex = 0;
+      } else if (nextIndex >= steps.length) {
+        nextIndex = steps.length - 1;
+      }
+
+      if (nextIndex !== currentStep) {
+        showPanelsIfHidden();
+        goToStep(nextIndex, delta > 0);
+      }
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        advanceStep(1);
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        advanceStep(-1);
+      }
+    });
+    function loadTask(index) {
+      currentTaskIndex = index;
+      currentTask = tasks[index];
+      taskTitle.textContent = currentTask.title;
+      ['task-theme-1','task-theme-2','task-theme-3','task-theme-4'].forEach(cls => body.classList.remove(cls));
+      body.classList.add(currentTask.themeClass);
+      data = currentTask.slices.map(slice => ({ ...slice }));
+      steps = currentTask.steps.map(step => ({ ...step }));
+      counts = currentTask.counts;
+      percentages = currentTask.percentages;
+      perDegreeText = currentTask.perDegreeText;
+      perDegreeSymbol = currentTask.perDegreeSymbol;
+      formatQuantity = currentTask.formatQuantity;
+      initialAngleLabels = Object.fromEntries(data.map(item => [item.id, item.display_angle]));
+      colorById = Object.fromEntries(data.map(item => [item.id, item.color]));
+      updateSummary(currentTask);
+      buildChart();
+      buildInfoPanel();
+      resetNarration();
+      applyHighlight(null);
+      highlightInfo(null);
+      applyReveals(-1);
+      visual.classList.add('concealed');
+      visual.setAttribute('aria-hidden', 'true');
+      infoPanel.classList.add('concealed');
+      infoPanel.setAttribute('aria-hidden', 'true');
+    }
+
+    window.addEventListener('resize', () => {
+      if (currentStep >= 0) {
+        ensureActiveLineVisible(false, true, stepLines.scrollHeight, currentStep);
+      }
+    });
+
+    loadTask(0);
+  </script>
+</body>
+</html>

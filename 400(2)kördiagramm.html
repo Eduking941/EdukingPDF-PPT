@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kördiagram készítése – Eduking feladatok</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Merriweather:wght@400;600&family=Source+Sans+Pro:wght@400;600&display=swap');
+    :root {
+      color-scheme: dark;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: rgb(30,30,30);
+      color: #ffffff;
+      font-family: "Times New Roman", serif;
+      overflow: hidden;
+      transition: background 0.6s ease, color 0.6s ease;
+    }
+    body.task-theme-1 {
+      background: radial-gradient(circle at top, rgba(32,52,112,0.95), rgb(10,16,34));
+    }
+    body.task-theme-2 {
+      background: radial-gradient(circle at top, rgba(94,48,24,0.96), rgb(34,16,10));
+      font-family: "Cardo", serif;
+    }
+    body.task-theme-3 {
+      background: radial-gradient(circle at top, rgba(12,66,76,0.95), rgb(6,24,30));
+      font-family: "Merriweather", serif;
+    }
+    body.task-theme-4 {
+      background: radial-gradient(circle at top, rgba(44,30,96,0.96), rgb(12,10,40));
+      font-family: "Source Sans Pro", sans-serif;
+    }
+    #top {
+      flex: 1 1 0;
+      min-height: 0;
+      position: relative;
+      padding: 24px 60px 0;
+      box-sizing: border-box;
+      display: flex;
+      align-items: stretch;
+      background: linear-gradient(180deg, rgba(18,18,18,0.85) 0%, rgba(18,18,18,0.65) 100%);
+      box-shadow: inset 0 -22px 36px rgba(0,0,0,0.55);
+      z-index: 1;
+      transition: background 0.6s ease;
+    }
+    body.task-theme-1 #top {
+      background: linear-gradient(180deg, rgba(24,46,96,0.92) 0%, rgba(12,22,50,0.7) 100%);
+    }
+    body.task-theme-2 #top {
+      background: linear-gradient(180deg, rgba(118,62,30,0.92) 0%, rgba(58,26,14,0.7) 100%);
+    }
+    body.task-theme-3 #top {
+      background: linear-gradient(180deg, rgba(14,86,96,0.92) 0%, rgba(8,40,46,0.7) 100%);
+    }
+    body.task-theme-4 #top {
+      background: linear-gradient(180deg, rgba(82,54,148,0.94) 0%, rgba(34,20,78,0.72) 100%);
+    }
+    #text-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: hidden;
+    }
+    #narration-panel {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      gap: 24px;
+      text-shadow: 0 0 12px rgba(0,0,0,0.7);
+      padding: 28px 36px 0;
+    }
+    #task-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+    }
+    #task-title {
+      font-size: 46px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    #step-main {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 120px;
+      font-size: 40px;
+      line-height: 1.3;
+      overflow: hidden;
+      padding: 0 12px 0;
+      position: relative;
+    }
+    #step-lines {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .step-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      transform: translateY(0);
+      opacity: 1;
+      transition:
+        font-size 0.72s cubic-bezier(0.19, 1, 0.22, 1),
+        opacity 0.55s ease;
+      text-align: center;
+      box-sizing: border-box;
+      line-height: 1.35;
+      white-space: normal;
+      word-break: normal;
+      overflow-wrap: anywhere;
+      padding: 0;
+    }
+    .step-line.center-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-line.active {}
+    .step-line.entering {
+      opacity: 0;
+    }
+    .step-line.pending-entry {
+      opacity: 0;
+    }
+    .step-line.extra-gap {}
+    .math-expression {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35em;
+      font-size: 0.92em;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .math-expression .math-operator {
+      font-weight: 600;
+    }
+    .math-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+      font-size: 0.95em;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .math-frac-num,
+    .math-frac-den {
+      display: block;
+      padding: 0.05em 0.3em;
+    }
+    .math-frac-den {
+      border-top: 1px solid currentColor;
+      margin-top: 0.08em;
+      width: 100%;
+    }
+    .sum-box {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2pt;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 10px;
+      padding: 0.26em 0.42em 0.32em;
+      background: rgba(0,0,0,0.28);
+      font-size: 0.72em;
+      margin: 0.35em auto 0;
+      max-width: min(520px, calc(100% - 64px));
+      box-sizing: border-box;
+    }
+    .sum-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.12em;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      margin: 0;
+    }
+    .sum-operator {
+      min-width: 0.8em;
+      text-align: center;
+      font-weight: 600;
+    }
+    .sum-number {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      gap: 0.04em;
+      font-weight: 600;
+    }
+    .sum-digit {
+      min-width: 0.6em;
+      text-align: center;
+    }
+    .sum-digit.blank {
+      visibility: hidden;
+    }
+    .sum-unit {
+      margin-left: 0.25em;
+      font-weight: 600;
+    }
+    .sum-row.total {
+      border-top: 1px solid currentColor;
+      margin-top: 0;
+      padding-top: 0.2em;
+    }
+    .sum-row.total .sum-number {
+      color: rgb(50,205,50);
+    }
+    .sum-row.total .sum-unit {
+      color: inherit;
+    }
+    .kw-data {
+      color: rgb(50,205,50);
+      font-weight: 600;
+    }
+    .kw-question {
+      color: rgb(235,0,0);
+      font-weight: 600;
+    }
+    .kw-rule {
+      color: rgb(255,165,0);
+      font-weight: 600;
+    }
+    .kw-explain {
+      color: rgb(0,128,255);
+      font-weight: 600;
+    }
+    .answer-lines {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6pt;
+    }
+    .answer-line {
+      display: block;
+    }
+    #divider {
+      height: 4px;
+      background: #ffffff;
+      flex: 0 0 4px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 -6px 12px rgba(0,0,0,0.6);
+    }
+    #bottom {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 32px 40px;
+      box-sizing: border-box;
+      overflow: visible;
+      background: linear-gradient(0deg, rgba(14,14,22,0.9) 0%, rgba(14,14,22,0.7) 100%);
+      box-shadow: inset 0 26px 42px rgba(0,0,0,0.55);
+      transition: background 0.6s ease;
+    }
+    body.task-theme-1 #bottom {
+      background: linear-gradient(0deg, rgba(14,24,52,0.9) 0%, rgba(12,20,44,0.7) 100%);
+    }
+    body.task-theme-2 #bottom {
+      background: linear-gradient(0deg, rgba(52,26,16,0.9) 0%, rgba(38,18,12,0.7) 100%);
+    }
+    body.task-theme-3 #bottom {
+      background: linear-gradient(0deg, rgba(12,46,52,0.9) 0%, rgba(10,32,38,0.7) 100%);
+    }
+    body.task-theme-4 #bottom {
+      background: linear-gradient(0deg, rgba(36,22,74,0.9) 0%, rgba(26,16,60,0.72) 100%);
+    }
+    #bottom-inner {
+      width: min(1400px, calc(100% - 24px));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: stretch;
+      gap: 32px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+    #visual {
+      flex: 1 1 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 24px;
+      max-width: 760px;
+      width: 100%;
+      transition: opacity 0.4s ease;
+      background: rgba(16,20,34,0.82);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
+      padding: 28px 28px 36px;
+      box-shadow: 0 24px 42px rgba(0,0,0,0.45);
+      color: #ffffff;
+      margin-top: -40pt;
+    }
+    #chart-wrapper {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 0 12px;
+      box-sizing: border-box;
+    }
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 170px;
+      align-items: flex-start;
+    }
+    .legend-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 22px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .legend-item.active {
+      transform: translateX(6px);
+    }
+    .legend-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .legend-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.45);
+      flex: 0 0 22px;
+    }
+    .legend-label {
+      font-size: 22px;
+    }
+    .legend-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 20px;
+      color: rgba(255,255,255,0.88);
+    }
+    .legend-line {
+      display: inline-flex;
+      gap: 6px;
+    }
+    #chart {
+      width: 520px;
+      height: 520px;
+    }
+    svg {
+      overflow: visible;
+    }
+    .slice-path {
+      stroke: none;
+      transition: transform 0.3s ease, fill 0.3s ease;
+    }
+    .slice-path.highlighted {
+      opacity: 1;
+    }
+    #info-panel {
+      flex: 1 1 480px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px 24px;
+      padding: 20px 28px;
+      background: rgba(18,22,36,0.82);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 18px;
+      box-shadow: 0 24px 42px rgba(0,0,0,0.45);
+      font-size: 24px;
+      transition: opacity 0.4s ease;
+      align-content: flex-start;
+      color: #ffffff;
+      max-width: 760px;
+      width: 100%;
+      margin-top: -40pt;
+    }
+    body.task-theme-1 #visual,
+    body.task-theme-1 #info-panel {
+      background: rgba(16,24,54,0.82);
+    }
+    body.task-theme-2 #visual,
+    body.task-theme-2 #info-panel {
+      background: rgba(60,30,20,0.86);
+    }
+    body.task-theme-3 #visual,
+    body.task-theme-3 #info-panel {
+      background: rgba(16,50,56,0.84);
+    }
+    body.task-theme-4 #visual,
+    body.task-theme-4 #info-panel {
+      background: rgba(44,24,82,0.86);
+    }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      line-height: 1.35;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      flex: 1 1 calc(50% - 32px);
+      min-width: 240px;
+    }
+    .info-item.active {
+      transform: translateX(8px);
+    }
+    .info-color {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(255,255,255,0.18);
+      flex: 0 0 26px;
+    }
+    .info-text {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .info-heading {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 24px;
+    }
+    .info-angle {
+      font-weight: 600;
+      min-width: 58px;
+    }
+    .info-label {
+      font-weight: 400;
+    }
+    .info-quantity {
+      font-size: 22px;
+      opacity: 0.85;
+    }
+    .info-percent {
+      font-size: 22px;
+      opacity: 0.85;
+    }
+    .concealed {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+    .summary-table {
+      margin-top: 16px;
+      border-collapse: collapse;
+      font-size: 22px;
+    }
+    .summary-table td, .summary-table th {
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 10px;
+    }
+    .summary-table th {
+      text-align: left;
+      background: rgba(255,255,255,0.08);
+    }
+    .mjx-svg {
+      color: #ffffff !important;
+    }
+    .mjx-svg text,
+    .mjx-svg tspan {
+      fill: #ffffff !important;
+    }
+    @media (max-width: 1500px) {
+      #bottom {
+        padding: 24px 24px 32px;
+      }
+      #bottom-inner {
+        width: 100%;
+        gap: 24px;
+      }
+      #info-panel {
+        justify-content: center;
+      }
+      .info-item {
+        flex: 1 1 calc(50% - 24px);
+      }
+      #chart {
+        width: 480px;
+        height: 480px;
+      }
+    }
+    @media (max-width: 1100px) {
+      #bottom-inner {
+        gap: 20px;
+      }
+      .info-item {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body class="task-theme-1">
+  <div id="top">
+    <div id="text-container">
+      <div id="narration-panel" aria-live="polite">
+        <div id="task-header">
+          <div id="task-title"></div>
+        </div>
+        <div id="step-main"><div id="step-lines"></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="divider"></div>
+  <div id="bottom">
+    <div id="bottom-inner">
+      <div id="visual" class="concealed" aria-hidden="true">
+        <div id="chart-wrapper">
+          <div class="chart-legend" id="legend-left"></div>
+          <div id="chart" aria-hidden="true"></div>
+          <div class="chart-legend" id="legend-right"></div>
+        </div>
+      </div>
+      <div id="info-panel" class="concealed" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="sr-only" id="alt-text"></div>
+  <div class="sr-only" aria-hidden="false">
+    <table class="summary-table">
+      <thead>
+        <tr id="summary-header"></tr>
+      </thead>
+      <tbody id="summary-body"></tbody>
+    </table>
+  </div>
+  <script>
+    const formatInteger = new Intl.NumberFormat('hu-HU');
+    const formatDecimal = new Intl.NumberFormat('hu-HU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formatPercent = new Intl.NumberFormat('hu-HU', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+
+    function formatAngleValue(value) {
+      return Number.isInteger(value) ? formatInteger.format(value) : formatDecimal.format(value);
+    }
+
+    const buildFraction = (numerator, denominator) => `
+      <span class="math-frac">
+        <span class="math-frac-num">${numerator}</span>
+        <span class="math-frac-den">${denominator}</span>
+      </span>
+    `.trim();
+    const mathValue = (value) => `<span>${value}</span>`;
+    const mathOperator = (symbol) => `<span class="math-operator">${symbol}</span>`;
+    const mathExpression = (...parts) => `<span class="math-expression">${parts.join(' ')}</span>`;
+
+    const stripTags = (markup) => markup.replace(/<[^>]*>/g, '');
+    const splitNumberParts = (text) => {
+      const trimmed = text.trim();
+      const match = trimmed.match(/^([0-9\s.,]+)(.*)$/);
+      if (!match) {
+        return { numeric: trimmed, unit: '' };
+      }
+      const numeric = match[1].trim();
+      const unit = match[2].trimStart();
+      return { numeric, unit };
+    };
+    const formatUnit = (unit) => {
+      if (!unit) return '';
+      const needsSpace = /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]/.test(unit);
+      return `${needsSpace ? ' ' : ''}${unit}`;
+    };
+
+    const buildVerticalSum = (entries, totalMarkup) => {
+      const parsedEntries = entries.map((entry) => {
+        const plain = stripTags(entry.text);
+        const { numeric, unit } = splitNumberParts(plain);
+        const digits = numeric.replace(/\s+/g, '').split('');
+        return { color: entry.color, digits, unit: formatUnit(unit) };
+      });
+      const totalPlain = stripTags(totalMarkup);
+      const { numeric: totalNumericRaw, unit: totalUnitRaw } = splitNumberParts(totalPlain);
+      const totalDigitsArray = totalNumericRaw.replace(/\s+/g, '').split('');
+      const totalUnit = formatUnit(totalUnitRaw);
+      const maxDigits = Math.max(1, ...parsedEntries.map(entry => entry.digits.length), totalDigitsArray.length);
+
+      const renderDigits = (digits, targetLength) => {
+        const padded = Array(Math.max(targetLength - digits.length, 0)).fill('').concat(digits);
+        return padded.map(char => {
+          const content = char ? char : '&nbsp;';
+          const extraClass = char ? '' : ' blank';
+          return `<span class="sum-digit${extraClass}">${content}</span>`;
+        }).join('');
+      };
+
+      const rowsMarkup = parsedEntries.map((entry, index) => {
+        const digitsMarkup = renderDigits(entry.digits, maxDigits);
+        const unitMarkup = entry.unit ? `<span class="sum-unit">${entry.unit}</span>` : '';
+        return `
+          <span class="sum-row">
+            <span class="sum-operator">${index > 0 ? '+' : '&nbsp;'}</span>
+            <span class="sum-number" style="color:${entry.color};">
+              ${digitsMarkup}
+              ${unitMarkup}
+            </span>
+          </span>
+        `;
+      }).join('');
+
+      const totalDigits = renderDigits(totalDigitsArray, maxDigits);
+      const totalUnitMarkup = totalUnit ? `<span class="sum-unit">${totalUnit}</span>` : '';
+
+      return `
+        <span class="sum-box">
+          ${rowsMarkup}
+          <span class="sum-row total">
+            <span class="sum-operator">=</span>
+            <span class="sum-number">
+              ${totalDigits}
+              ${totalUnitMarkup}
+            </span>
+          </span>
+        </span>
+      `;
+    };
+
+    const kwData = (text) => `<span class="kw-data">${text}</span>`;
+    const kwQuestion = (text) => `<span class="kw-question">${text}</span>`;
+    const kwRule = (text) => `<span class="kw-rule">${text}</span>`;
+    const kwExplain = (text) => `<span class="kw-explain">${text}</span>`;
+    const buildAnswerMarkup = (anglesLine, countsLine) => `
+      <span class="answer-lines">
+        <span class="answer-line">${anglesLine}</span>
+        <span class="answer-line">${countsLine}</span>
+      </span>
+    `;
+
+    const taskTitle = document.getElementById('task-title');
+    const body = document.body;
+    const infoPanel = document.getElementById('info-panel');
+    const visual = document.getElementById('visual');
+    const legendLeft = document.getElementById('legend-left');
+    const legendRight = document.getElementById('legend-right');
+    const chartContainer = document.getElementById('chart');
+    const altTextNode = document.getElementById('alt-text');
+    const summaryHeader = document.getElementById('summary-header');
+    const summaryBody = document.getElementById('summary-body');
+
+    const NEUTRAL_SLICE_COLOR = 'rgba(204,210,224,0.45)';
+    function createTask1() {
+      const rawData = [
+        { id: 'olvasas', label: 'Olvasókör', count: 18, color: '#47A6FF', detail: 'Olvasókör résztvevői' },
+        { id: 'sport', label: 'Sportkör', count: 12, color: '#FF6B6B', detail: 'Sportkör résztvevői' },
+        { id: 'zene', label: 'Zene szakkör', count: 6, color: '#FFD166', detail: 'Zene szakkör résztvevői' }
+      ];
+      const totalUnits = rawData.reduce((sum, item) => sum + item.count, 0);
+      const degreesPerUnit = 360 / totalUnits;
+      const slices = rawData.map(item => ({
+        id: item.id,
+        label: item.label,
+        angle_deg: item.count * degreesPerUnit,
+        percent: (item.count / totalUnits) * 100,
+        display_angle: '?',
+        color: item.color,
+        detail: item.detail
+      }));
+      const counts = Object.fromEntries(rawData.map(item => [item.id, item.count]));
+      const percentages = Object.fromEntries(slices.map(slice => [slice.id, slice.percent]));
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const formatQuantityValue = value => `${formatInteger.format(value)} fő`;
+      const angleTexts = Object.fromEntries(slices.map(slice => [slice.id, formatAngleValue(slice.angle_deg)]));
+      const percentTexts = Object.fromEntries(slices.map(slice => [slice.id, `${formatPercent.format(slice.percent)}%`]));
+      const coloredCountSum = rawData
+        .map(item => `<span style="color:${item.color}; font-weight:600;">${formatInteger.format(item.count)}</span>`)
+        .join(' + ');
+      const angleSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: `${angleTexts[slice.id]}°` })),
+        kwData('360°')
+      );
+      const countSumStack = buildVerticalSum(
+        rawData.map(item => ({ color: colorById[item.id], text: formatQuantityValue(counts[item.id]) })),
+        kwData(formatQuantityValue(totalUnits))
+      );
+      const totalUnitsText = formatInteger.format(totalUnits);
+      const degreesPerUnitText = `${formatAngleValue(degreesPerUnit)}°`;
+      const perUnitCalculationExpression = mathExpression(
+        buildFraction('360°', totalUnitsText),
+        mathOperator('='),
+        mathValue(kwData(degreesPerUnitText))
+      );
+      const angleCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          mathValue(formatInteger.format(counts[slice.id])),
+          mathOperator('·'),
+          mathValue(degreesPerUnitText),
+          mathOperator('='),
+          mathValue(kwData(`${angleTexts[slice.id]}°`))
+        )
+      ]));
+      const percentCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          buildFraction(formatInteger.format(counts[slice.id]), totalUnitsText),
+          mathOperator('·'),
+          mathValue('100%'),
+          mathOperator('='),
+          mathValue(kwData(percentTexts[slice.id]))
+        )
+      ]));
+      const percentSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: percentTexts[slice.id] })),
+        kwData('100%')
+      );
+      const answerAngles = slices
+        .map(slice => kwData(`${angleTexts[slice.id]}°`))
+        .join(', ');
+      const answerCounts = rawData
+        .map(item => kwData(formatQuantityValue(counts[item.id])))
+        .join(', ');
+      const answerMarkup = buildAnswerMarkup(answerAngles, answerCounts);
+      const steps = [
+        { main: `${kwExplain('Rajzoljunk kördiagramot')} az iskola délutáni szakköreiről.`, focus: null },
+        { main: `Az <span style="color:${colorById['olvasas']}; font-weight:600;">olvasókör</span> ${kwData(`${formatInteger.format(counts['olvasas'])} főt`)} képvisel.`, focus: ['olvasas'], revealQuantities: { olvasas: counts['olvasas'] } },
+        { main: `A <span style="color:${colorById['sport']}; font-weight:600;">sportkör</span> ${kwData(`${formatInteger.format(counts['sport'])} főt`)} jelent.`, focus: ['sport'], revealQuantities: { sport: counts['sport'] } },
+        { main: `A <span style="color:${colorById['zene']}; font-weight:600;">zene szakkör</span> ${kwData(`${formatInteger.format(counts['zene'])} főből`)} áll.`, focus: ['zene'], revealQuantities: { zene: counts['zene'] } },
+        { main: `${kwRule('Ezek együtt')} ${coloredCountSum} = ${kwData(`${formatInteger.format(totalUnits)} fő`)}.`, focus: slices.map(slice => slice.id) },
+        { main: `${kwRule('Számoljuk ki az egy főre jutó szöget')}: ${perUnitCalculationExpression}.`, focus: null, forcePreShift: true, forcePreShiftStart: true },
+        { main: `${kwExplain('Olvasókör')}: ${angleCalculationExpression['olvasas']}.`, focus: ['olvasas'], revealAngles: { olvasas: `${angleTexts['olvasas']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Sportkör')}: ${angleCalculationExpression['sport']}.`, focus: ['sport'], revealAngles: { sport: `${angleTexts['sport']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Zene szakkör')}: ${angleCalculationExpression['zene']}.`, focus: ['zene'], revealAngles: { zene: `${angleTexts['zene']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Most rajzoljuk be a kiszámolt szeleteket')} a körbe.`, focus: null, activateSlices: true, forcePreShift: true },
+        { main: `${kwRule('Számoljuk ki a százalékos arányokat')}.`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Olvasókör')}: ${percentCalculationExpression['olvasas']}.`, focus: ['olvasas'], revealPercents: { olvasas: percentTexts['olvasas'] }, forcePreShift: true },
+        { main: `${kwExplain('Sportkör')}: ${percentCalculationExpression['sport']}.`, focus: ['sport'], revealPercents: { sport: percentTexts['sport'] }, forcePreShift: true },
+        { main: `${kwExplain('Zene szakkör')}: ${percentCalculationExpression['zene']}.`, focus: ['zene'], revealPercents: { zene: percentTexts['zene'] }, forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – létszám')}: ${countSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – fokok')}: ${angleSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – százalékok')}: ${percentSumStack}`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Válasz')}: ${answerMarkup}`, focus: null, forcePreShift: true }
+      ];
+      let firstMathIndex = steps.findIndex(step => typeof step.main === 'string' && step.main.includes('math-frac'));
+      steps.forEach((step, index) => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+          if (step.main.includes('math-frac')) {
+            if (!step.preRaise) step.preRaise = true;
+            if (!step.forcePreShift) step.forcePreShift = true;
+            if (firstMathIndex === index && !step.forcePreShiftStart) {
+              step.forcePreShiftStart = true;
+            }
+            step.centerLine = true;
+            step.fractionGap = true;
+          }
+        }
+      });
+      return {
+        title: '1. feladat – Három szakkör adatai',
+        themeClass: 'task-theme-1',
+        slices,
+        counts,
+        percentages,
+        steps,
+        unitLabel: 'fő',
+        formatQuantity: formatQuantityValue,
+        summary: {
+          columns: ['Szakkör', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.label, `${formatPercent.format(slice.percent)}%`, `${formatAngleValue(slice.angle_deg)}°`])
+        },
+        altText: 'Kördiagram az iskola szakköreiről: olvasókör 50%, sportkör 33,3%, zene szakkör 16,7%.'
+      };
+    }
+
+    function createTask2() {
+      const rawData = [
+        { id: 'drama', label: 'Drámakör', count: 18, color: '#D27C2C', detail: 'Drámakör résztvevői' },
+        { id: 'robotika', label: 'Robotika klub', count: 16, color: '#B26B3D', detail: 'Robotika klub résztvevői' },
+        { id: 'nyelvi', label: 'Nyelvi klub', count: 12, color: '#E3B778', detail: 'Nyelvi klub résztvevői' },
+        { id: 'media', label: 'Média-szakkör', count: 14, color: '#7FB069', detail: 'Média-szakkör résztvevői' }
+      ];
+      const totalUnits = rawData.reduce((sum, item) => sum + item.count, 0);
+      const degreesPerUnit = 360 / totalUnits;
+      const slices = rawData.map(item => ({
+        id: item.id,
+        label: item.label,
+        angle_deg: item.count * degreesPerUnit,
+        percent: (item.count / totalUnits) * 100,
+        display_angle: '?',
+        color: item.color,
+        detail: item.detail
+      }));
+      const counts = Object.fromEntries(rawData.map(item => [item.id, item.count]));
+      const percentages = Object.fromEntries(slices.map(slice => [slice.id, slice.percent]));
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const formatQuantityValue = value => `${formatInteger.format(value)} fő`;
+      const angleTexts = Object.fromEntries(slices.map(slice => [slice.id, formatAngleValue(slice.angle_deg)]));
+      const percentTexts = Object.fromEntries(slices.map(slice => [slice.id, `${formatPercent.format(slice.percent)}%`]));
+      const coloredCountSum = rawData
+        .map(item => `<span style="color:${item.color}; font-weight:600;">${formatInteger.format(item.count)}</span>`)
+        .join(' + ');
+      const angleSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: `${angleTexts[slice.id]}°` })),
+        kwData('360°')
+      );
+      const countSumStack = buildVerticalSum(
+        rawData.map(item => ({ color: colorById[item.id], text: formatQuantityValue(counts[item.id]) })),
+        kwData(formatQuantityValue(totalUnits))
+      );
+      const totalUnitsText = formatInteger.format(totalUnits);
+      const degreesPerUnitText = `${formatAngleValue(degreesPerUnit)}°`;
+      const perUnitCalculationExpression = mathExpression(
+        buildFraction('360°', totalUnitsText),
+        mathOperator('='),
+        mathValue(kwData(degreesPerUnitText))
+      );
+      const angleCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          mathValue(formatInteger.format(counts[slice.id])),
+          mathOperator('·'),
+          mathValue(degreesPerUnitText),
+          mathOperator('='),
+          mathValue(kwData(`${angleTexts[slice.id]}°`))
+        )
+      ]));
+      const percentCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          buildFraction(formatInteger.format(counts[slice.id]), totalUnitsText),
+          mathOperator('·'),
+          mathValue('100%'),
+          mathOperator('='),
+          mathValue(kwData(percentTexts[slice.id]))
+        )
+      ]));
+      const percentSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: percentTexts[slice.id] })),
+        kwData('100%')
+      );
+      const answerAngles = slices
+        .map(slice => kwData(`${angleTexts[slice.id]}°`))
+        .join(', ');
+      const answerCounts = rawData
+        .map(item => kwData(formatQuantityValue(counts[item.id])))
+        .join(', ');
+      const answerMarkup = buildAnswerMarkup(answerAngles, answerCounts);
+      const steps = [
+        { main: `${kwExplain('Nézzünk másik négy szakkört')}!`, focus: null },
+        { main: `A <span style="color:${colorById['drama']}; font-weight:600;">drámakör</span> ${kwData(`${formatInteger.format(counts['drama'])} főt`)} számlál.`, focus: ['drama'], revealQuantities: { drama: counts['drama'] } },
+        { main: `A <span style="color:${colorById['robotika']}; font-weight:600;">robotika klub</span> ${kwData(`${formatInteger.format(counts['robotika'])} fővel`)} dolgozik.`, focus: ['robotika'], revealQuantities: { robotika: counts['robotika'] } },
+        { main: `A <span style="color:${colorById['nyelvi']}; font-weight:600;">nyelvi klub</span> ${kwData(`${formatInteger.format(counts['nyelvi'])} főt`)} jelent.`, focus: ['nyelvi'], revealQuantities: { nyelvi: counts['nyelvi'] } },
+        { main: `A <span style="color:${colorById['media']}; font-weight:600;">média-szakkör</span> ${kwData(`${formatInteger.format(counts['media'])} főből`)} áll.`, focus: ['media'], revealQuantities: { media: counts['media'] } },
+        { main: `${kwRule('Ezek együtt')} ${coloredCountSum} = ${kwData(`${formatInteger.format(totalUnits)} fő`)}.`, focus: slices.map(slice => slice.id) },
+        { main: `${kwRule('Számoljuk ki az egy főre jutó szöget')}: ${perUnitCalculationExpression}.`, focus: null, forcePreShift: true, forcePreShiftStart: true },
+        { main: `${kwExplain('Drámakör')}: ${angleCalculationExpression['drama']}.`, focus: ['drama'], revealAngles: { drama: `${angleTexts['drama']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Robotika klub')}: ${angleCalculationExpression['robotika']}.`, focus: ['robotika'], revealAngles: { robotika: `${angleTexts['robotika']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Nyelvi klub')}: ${angleCalculationExpression['nyelvi']}.`, focus: ['nyelvi'], revealAngles: { nyelvi: `${angleTexts['nyelvi']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Média-szakkör')}: ${angleCalculationExpression['media']}.`, focus: ['media'], revealAngles: { media: `${angleTexts['media']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Most rajzoljuk be a kiszámolt szeleteket')} a körbe.`, focus: null, activateSlices: true, forcePreShift: true },
+        { main: `${kwRule('Számoljuk ki a százalékokat')}.`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Drámakör')}: ${percentCalculationExpression['drama']}.`, focus: ['drama'], revealPercents: { drama: percentTexts['drama'] }, forcePreShift: true },
+        { main: `${kwExplain('Robotika klub')}: ${percentCalculationExpression['robotika']}.`, focus: ['robotika'], revealPercents: { robotika: percentTexts['robotika'] }, forcePreShift: true },
+        { main: `${kwExplain('Nyelvi klub')}: ${percentCalculationExpression['nyelvi']}.`, focus: ['nyelvi'], revealPercents: { nyelvi: percentTexts['nyelvi'] }, forcePreShift: true },
+        { main: `${kwExplain('Média-szakkör')}: ${percentCalculationExpression['media']}.`, focus: ['media'], revealPercents: { media: percentTexts['media'] }, forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – létszám')}: ${countSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – fokok')}: ${angleSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – százalékok')}: ${percentSumStack}`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Válasz')}: ${answerMarkup}`, focus: null, forcePreShift: true },
+      ];
+      let firstMathIndex = steps.findIndex(step => typeof step.main === 'string' && step.main.includes('math-frac'));
+      steps.forEach((step, index) => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+          if (step.main.includes('math-frac')) {
+            if (!step.preRaise) step.preRaise = true;
+            if (!step.forcePreShift) step.forcePreShift = true;
+            if (firstMathIndex === index && !step.forcePreShiftStart) {
+              step.forcePreShiftStart = true;
+            }
+            step.centerLine = true;
+            step.fractionGap = true;
+          }
+        }
+      });
+      return {
+        title: '2. feladat – Négy szakkör összehasonlítása',
+        themeClass: 'task-theme-2',
+        slices,
+        counts,
+        percentages,
+        steps,
+        unitLabel: 'fő',
+        formatQuantity: formatQuantityValue,
+        summary: {
+          columns: ['Szakkör', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.label, `${formatPercent.format(slice.percent)}%`, `${formatAngleValue(slice.angle_deg)}°`])
+        },
+        altText: 'Kördiagram négy szakkör résztvevőiről: drámakör 30%, robotika 26,7%, nyelvi klub 20%, média-szakkör 23,3%.'
+      };
+    }
+
+    function createTask3() {
+      const rawData = [
+        { id: 'kutatas', label: 'Kutatás', count: 20, color: '#4ECDC4', detail: 'Kutatási előkészítés' },
+        { id: 'tervezes', label: 'Tervezés', count: 16, color: '#FFB400', detail: 'Tervezési feladatok' },
+        { id: 'kiserlet', label: 'Kísérlet', count: 14, color: '#FF6B6B', detail: 'Kísérleti munka' },
+        { id: 'dokumentalas', label: 'Dokumentálás', count: 12, color: '#845EC2', detail: 'Jegyzetelés és fotózás' },
+        { id: 'prezentacio', label: 'Prezentáció', count: 10, color: '#6EEB83', detail: 'Bemutató készítés' }
+      ];
+      const totalUnits = rawData.reduce((sum, item) => sum + item.count, 0);
+      const degreesPerUnit = 360 / totalUnits;
+      const slices = rawData.map(item => ({
+        id: item.id,
+        label: item.label,
+        angle_deg: item.count * degreesPerUnit,
+        percent: (item.count / totalUnits) * 100,
+        display_angle: '?',
+        color: item.color,
+        detail: item.detail
+      }));
+      const counts = Object.fromEntries(rawData.map(item => [item.id, item.count]));
+      const percentages = Object.fromEntries(slices.map(slice => [slice.id, slice.percent]));
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const formatQuantityValue = value => `${formatInteger.format(value)} óra`;
+      const angleTexts = Object.fromEntries(slices.map(slice => [slice.id, formatAngleValue(slice.angle_deg)]));
+      const percentTexts = Object.fromEntries(slices.map(slice => [slice.id, `${formatPercent.format(slice.percent)}%`]));
+      const coloredCountSum = rawData
+        .map(item => `<span style="color:${item.color}; font-weight:600;">${formatInteger.format(item.count)}</span>`)
+        .join(' + ');
+      const angleSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: `${angleTexts[slice.id]}°` })),
+        kwData('360°')
+      );
+      const countSumStack = buildVerticalSum(
+        rawData.map(item => ({ color: colorById[item.id], text: formatQuantityValue(counts[item.id]) })),
+        kwData(formatQuantityValue(totalUnits))
+      );
+      const totalUnitsText = formatInteger.format(totalUnits);
+      const degreesPerUnitText = `${formatAngleValue(degreesPerUnit)}°`;
+      const perUnitCalculationExpression = mathExpression(
+        buildFraction('360°', totalUnitsText),
+        mathOperator('='),
+        mathValue(kwData(degreesPerUnitText))
+      );
+      const angleCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          mathValue(formatInteger.format(counts[slice.id])),
+          mathOperator('·'),
+          mathValue(degreesPerUnitText),
+          mathOperator('='),
+          mathValue(kwData(`${angleTexts[slice.id]}°`))
+        )
+      ]));
+      const percentCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          buildFraction(formatInteger.format(counts[slice.id]), totalUnitsText),
+          mathOperator('·'),
+          mathValue('100%'),
+          mathOperator('='),
+          mathValue(kwData(percentTexts[slice.id]))
+        )
+      ]));
+      const percentSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: percentTexts[slice.id] })),
+        kwData('100%')
+      );
+      const answerAngles = slices
+        .map(slice => kwData(`${angleTexts[slice.id]}°`))
+        .join(', ');
+      const answerCounts = rawData
+        .map(item => kwData(formatQuantityValue(counts[item.id])))
+        .join(', ');
+      const answerMarkup = buildAnswerMarkup(answerAngles, answerCounts);
+      const steps = [
+        { main: `${kwExplain('Öt tevékenységből álló projekttervhez készítünk kördiagramot')}.`, focus: null },
+        { main: `A <span style="color:${colorById['kutatas']}; font-weight:600;">kutatás</span> ${kwData(`${formatInteger.format(counts['kutatas'])} órát`)} igényel.`, focus: ['kutatas'], revealQuantities: { kutatas: counts['kutatas'] } },
+        { main: `A <span style="color:${colorById['tervezes']}; font-weight:600;">tervezés</span> ${kwData(`${formatInteger.format(counts['tervezes'])} órát`)} kap.`, focus: ['tervezes'], revealQuantities: { tervezes: counts['tervezes'] } },
+        { main: `A <span style="color:${colorById['kiserlet']}; font-weight:600;">kísérlet</span> ${kwData(`${formatInteger.format(counts['kiserlet'])} órát`)} jelent.`, focus: ['kiserlet'], revealQuantities: { kiserlet: counts['kiserlet'] } },
+        { main: `A <span style="color:${colorById['dokumentalas']}; font-weight:600;">dokumentálás</span> ${kwData(`${formatInteger.format(counts['dokumentalas'])} órát`)} vesz igénybe.`, focus: ['dokumentalas'], revealQuantities: { dokumentalas: counts['dokumentalas'] } },
+        { main: `A <span style="color:${colorById['prezentacio']}; font-weight:600;">prezentáció</span> ${kwData(`${formatInteger.format(counts['prezentacio'])} órát`)} tesz ki.`, focus: ['prezentacio'], revealQuantities: { prezentacio: counts['prezentacio'] } },
+        { main: `${kwRule('Ezek együtt')} ${coloredCountSum} = ${kwData(`${formatInteger.format(totalUnits)} óra`)}.`, focus: slices.map(slice => slice.id) },
+        { main: `${kwRule('Számoljuk ki az egy órára jutó szöget')}: ${perUnitCalculationExpression}.`, focus: null, forcePreShift: true, forcePreShiftStart: true },
+        { main: `${kwExplain('Kutatás')}: ${angleCalculationExpression['kutatas']}.`, focus: ['kutatas'], revealAngles: { kutatas: `${angleTexts['kutatas']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Tervezés')}: ${angleCalculationExpression['tervezes']}.`, focus: ['tervezes'], revealAngles: { tervezes: `${angleTexts['tervezes']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Kísérlet')}: ${angleCalculationExpression['kiserlet']}.`, focus: ['kiserlet'], revealAngles: { kiserlet: `${angleTexts['kiserlet']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Dokumentálás')}: ${angleCalculationExpression['dokumentalas']}.`, focus: ['dokumentalas'], revealAngles: { dokumentalas: `${angleTexts['dokumentalas']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Prezentáció')}: ${angleCalculationExpression['prezentacio']}.`, focus: ['prezentacio'], revealAngles: { prezentacio: `${angleTexts['prezentacio']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Most rajzoljuk be a kiszámolt szeleteket')} a körbe.`, focus: null, activateSlices: true, forcePreShift: true },
+        { main: `${kwRule('Számoljuk ki a százalékos megoszlást')}.`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Kutatás')}: ${percentCalculationExpression['kutatas']}.`, focus: ['kutatas'], revealPercents: { kutatas: percentTexts['kutatas'] }, forcePreShift: true },
+        { main: `${kwExplain('Tervezés')}: ${percentCalculationExpression['tervezes']}.`, focus: ['tervezes'], revealPercents: { tervezes: percentTexts['tervezes'] }, forcePreShift: true },
+        { main: `${kwExplain('Kísérlet')}: ${percentCalculationExpression['kiserlet']}.`, focus: ['kiserlet'], revealPercents: { kiserlet: percentTexts['kiserlet'] }, forcePreShift: true },
+        { main: `${kwExplain('Dokumentálás')}: ${percentCalculationExpression['dokumentalas']}.`, focus: ['dokumentalas'], revealPercents: { dokumentalas: percentTexts['dokumentalas'] }, forcePreShift: true },
+        { main: `${kwExplain('Prezentáció')}: ${percentCalculationExpression['prezentacio']}.`, focus: ['prezentacio'], revealPercents: { prezentacio: percentTexts['prezentacio'] }, forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – létszám')}: ${countSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – fokok')}: ${angleSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – százalékok')}: ${percentSumStack}`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Válasz')}: ${answerMarkup}`, focus: null, forcePreShift: true },
+      ];
+      let firstMathIndex = steps.findIndex(step => typeof step.main === 'string' && step.main.includes('math-frac'));
+      steps.forEach((step, index) => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+          if (step.main.includes('math-frac')) {
+            if (!step.preRaise) step.preRaise = true;
+            if (!step.forcePreShift) step.forcePreShift = true;
+            if (firstMathIndex === index && !step.forcePreShiftStart) {
+              step.forcePreShiftStart = true;
+            }
+            step.centerLine = true;
+            step.fractionGap = true;
+          }
+        }
+      });
+      return {
+        title: '3. feladat – Öt részből álló projektterv',
+        themeClass: 'task-theme-3',
+        slices,
+        counts,
+        percentages,
+        steps,
+        unitLabel: 'óra',
+        formatQuantity: formatQuantityValue,
+        summary: {
+          columns: ['Tevékenység', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.label, `${formatPercent.format(slice.percent)}%`, `${formatAngleValue(slice.angle_deg)}°`])
+        },
+        altText: 'Kördiagram egy projekt 72 órájáról: kutatás 27,8%, tervezés 22,2%, kísérlet 19,4%, dokumentálás 16,7%, prezentáció 13,9%.'
+      };
+    }
+
+
+    function createTask4() {
+      const rawData = [
+        { id: 'szinpad', label: 'Színpadi program', count: 22, color: '#FF6F91', detail: 'Színpadi produkciók szavazatai' },
+        { id: 'workshop', label: 'Workshop', count: 18, color: '#FFA06E', detail: 'Workshop szavazatok' },
+        { id: 'kiallitas', label: 'Kiállítás', count: 16, color: '#FFD166', detail: 'Kiállításra adott szavazatok' },
+        { id: 'gasztro', label: 'Gasztro-udvar', count: 14, color: '#3DD6C6', detail: 'Gasztro-udvar szavazatai' },
+        { id: 'jatekter', label: 'Játéktér', count: 12, color: '#845EC2', detail: 'Játéktér szavazatai' },
+        { id: 'piheno', label: 'Pihenőzóna', count: 8, color: '#F9F871', detail: 'Pihenőzóna szavazatai' }
+      ];
+      const totalUnits = rawData.reduce((sum, item) => sum + item.count, 0);
+      const degreesPerUnit = 360 / totalUnits;
+      const slices = rawData.map(item => ({
+        id: item.id,
+        label: item.label,
+        angle_deg: item.count * degreesPerUnit,
+        percent: (item.count / totalUnits) * 100,
+        display_angle: '?',
+        color: item.color,
+        detail: item.detail
+      }));
+      const counts = Object.fromEntries(rawData.map(item => [item.id, item.count]));
+      const percentages = Object.fromEntries(slices.map(slice => [slice.id, slice.percent]));
+      const colorById = Object.fromEntries(slices.map(slice => [slice.id, slice.color]));
+      const formatQuantityValue = value => `${formatInteger.format(value)} szavazat`;
+      const angleTexts = Object.fromEntries(slices.map(slice => [slice.id, formatAngleValue(slice.angle_deg)]));
+      const percentTexts = Object.fromEntries(slices.map(slice => [slice.id, `${formatPercent.format(slice.percent)}%`]));
+      const coloredCountSum = rawData
+        .map(item => `<span style="color:${item.color}; font-weight:600;">${formatInteger.format(item.count)}</span>`)
+        .join(' + ');
+      const angleSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: `${angleTexts[slice.id]}°` })),
+        kwData('360°')
+      );
+      const countSumStack = buildVerticalSum(
+        rawData.map(item => ({ color: colorById[item.id], text: formatQuantityValue(counts[item.id]) })),
+        kwData(formatQuantityValue(totalUnits))
+      );
+      const totalUnitsText = formatInteger.format(totalUnits);
+      const degreesPerUnitText = `${formatAngleValue(degreesPerUnit)}°`;
+      const perUnitCalculationExpression = mathExpression(
+        buildFraction('360°', totalUnitsText),
+        mathOperator('='),
+        mathValue(kwData(degreesPerUnitText))
+      );
+      const angleCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          mathValue(formatInteger.format(counts[slice.id])),
+          mathOperator('·'),
+          mathValue(degreesPerUnitText),
+          mathOperator('='),
+          mathValue(kwData(`${angleTexts[slice.id]}°`))
+        )
+      ]));
+      const percentCalculationExpression = Object.fromEntries(slices.map(slice => [
+        slice.id,
+        mathExpression(
+          buildFraction(formatInteger.format(counts[slice.id]), totalUnitsText),
+          mathOperator('·'),
+          mathValue('100%'),
+          mathOperator('='),
+          mathValue(kwData(percentTexts[slice.id]))
+        )
+      ]));
+      const percentSumStack = buildVerticalSum(
+        slices.map(slice => ({ color: colorById[slice.id], text: percentTexts[slice.id] })),
+        kwData('100%')
+      );
+      const answerAngles = slices
+        .map(slice => kwData(`${angleTexts[slice.id]}°`))
+        .join(', ');
+      const answerCounts = rawData
+        .map(item => kwData(formatQuantityValue(counts[item.id])))
+        .join(', ');
+      const answerMarkup = buildAnswerMarkup(answerAngles, answerCounts);
+      const steps = [
+        { main: `${kwExplain('Hat stand szavazataiból készítünk kördiagramot a fesztiválon')}.`, focus: null },
+        { main: `A <span style="color:${colorById['szinpad']}; font-weight:600;">színpadi program</span> ${kwData(`${formatInteger.format(counts['szinpad'])} szavazatot`)} kapott.`, focus: ['szinpad'], revealQuantities: { szinpad: counts['szinpad'] } },
+        { main: `A <span style="color:${colorById['workshop']}; font-weight:600;">workshop</span> ${kwData(`${formatInteger.format(counts['workshop'])} szavazatot`)} gyűjtött.`, focus: ['workshop'], revealQuantities: { workshop: counts['workshop'] } },
+        { main: `A <span style="color:${colorById['kiallitas']}; font-weight:600;">kiállítás</span> ${kwData(`${formatInteger.format(counts['kiallitas'])} szavazatot`)} szerzett.`, focus: ['kiallitas'], revealQuantities: { kiallitas: counts['kiallitas'] } },
+        { main: `A <span style="color:${colorById['gasztro']}; font-weight:600;">gasztro-udvar</span> ${kwData(`${formatInteger.format(counts['gasztro'])} szavazatot`)} kapott.`, focus: ['gasztro'], revealQuantities: { gasztro: counts['gasztro'] } },
+        { main: `A <span style="color:${colorById['jatekter']}; font-weight:600;">játéktér</span> ${kwData(`${formatInteger.format(counts['jatekter'])} szavazatot`)} jelent.`, focus: ['jatekter'], revealQuantities: { jatekter: counts['jatekter'] } },
+        { main: `A <span style="color:${colorById['piheno']}; font-weight:600;">pihenőzóna</span> ${kwData(`${formatInteger.format(counts['piheno'])} szavazatot`)} hozott.`, focus: ['piheno'], revealQuantities: { piheno: counts['piheno'] } },
+        { main: `${kwRule('Ezek együtt')} ${coloredCountSum} = ${kwData(`${formatInteger.format(totalUnits)} szavazat`)}.`, focus: slices.map(slice => slice.id) },
+        { main: `${kwRule('Számoljuk ki az egy szavazatra jutó szöget')}: ${perUnitCalculationExpression}.`, focus: null, forcePreShift: true, forcePreShiftStart: true },
+        { main: `${kwExplain('Színpadi program')}: ${angleCalculationExpression['szinpad']}.`, focus: ['szinpad'], revealAngles: { szinpad: `${angleTexts['szinpad']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Workshop')}: ${angleCalculationExpression['workshop']}.`, focus: ['workshop'], revealAngles: { workshop: `${angleTexts['workshop']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Kiállítás')}: ${angleCalculationExpression['kiallitas']}.`, focus: ['kiallitas'], revealAngles: { kiallitas: `${angleTexts['kiallitas']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Gasztro-udvar')}: ${angleCalculationExpression['gasztro']}.`, focus: ['gasztro'], revealAngles: { gasztro: `${angleTexts['gasztro']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Játéktér')}: ${angleCalculationExpression['jatekter']}.`, focus: ['jatekter'], revealAngles: { jatekter: `${angleTexts['jatekter']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Pihenőzóna')}: ${angleCalculationExpression['piheno']}.`, focus: ['piheno'], revealAngles: { piheno: `${angleTexts['piheno']}°` }, forcePreShift: true },
+        { main: `${kwExplain('Most rajzoljuk be a kiszámolt szeleteket')} a körbe.`, focus: null, activateSlices: true, forcePreShift: true },
+        { main: `${kwRule('Számoljuk ki a százalékos eredményeket')}.`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Színpadi program')}: ${percentCalculationExpression['szinpad']}.`, focus: ['szinpad'], revealPercents: { szinpad: percentTexts['szinpad'] }, forcePreShift: true },
+        { main: `${kwExplain('Workshop')}: ${percentCalculationExpression['workshop']}.`, focus: ['workshop'], revealPercents: { workshop: percentTexts['workshop'] }, forcePreShift: true },
+        { main: `${kwExplain('Kiállítás')}: ${percentCalculationExpression['kiallitas']}.`, focus: ['kiallitas'], revealPercents: { kiallitas: percentTexts['kiallitas'] }, forcePreShift: true },
+        { main: `${kwExplain('Gasztro-udvar')}: ${percentCalculationExpression['gasztro']}.`, focus: ['gasztro'], revealPercents: { gasztro: percentTexts['gasztro'] }, forcePreShift: true },
+        { main: `${kwExplain('Játéktér')}: ${percentCalculationExpression['jatekter']}.`, focus: ['jatekter'], revealPercents: { jatekter: percentTexts['jatekter'] }, forcePreShift: true },
+        { main: `${kwExplain('Pihenőzóna')}: ${percentCalculationExpression['piheno']}.`, focus: ['piheno'], revealPercents: { piheno: percentTexts['piheno'] }, forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – létszám')}: ${countSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – fokok')}: ${angleSumStack}`, focus: slices.map(slice => slice.id), forcePreShift: true },
+        { main: `${kwExplain('Ellenőrzés – százalékok')}: ${percentSumStack}`, focus: null, forcePreShift: true },
+        { main: `${kwExplain('Válasz')}: ${answerMarkup}`, focus: null, forcePreShift: true },
+      ];
+      let firstMathIndex = steps.findIndex(step => typeof step.main === 'string' && step.main.includes('math-frac'));
+      steps.forEach((step, index) => {
+        if (typeof step.main === 'string') {
+          step.main = step.main.replace(/\s*\n\s*/g, ' ');
+          if (step.main.includes('math-frac')) {
+            if (!step.preRaise) step.preRaise = true;
+            if (!step.forcePreShift) step.forcePreShift = true;
+            if (firstMathIndex === index && !step.forcePreShiftStart) {
+              step.forcePreShiftStart = true;
+            }
+            step.centerLine = true;
+            step.fractionGap = true;
+          }
+        }
+      });
+      return {
+        title: '4. feladat – Fesztiválstandok szavazatai',
+        themeClass: 'task-theme-4',
+        slices,
+        counts,
+        percentages,
+        steps,
+        unitLabel: 'szavazat',
+        formatQuantity: formatQuantityValue,
+        summary: {
+          columns: ['Stand', 'Százalék', 'Fok'],
+          rows: slices.map(slice => [slice.label, `${formatPercent.format(slice.percent)}%`, `${formatAngleValue(slice.angle_deg)}°`])
+        },
+        altText: 'Kördiagram a fesztivál standjainak 90 szavazatáról: színpadi program 24,4%, workshop 20%, kiállítás 17,8%, gasztro-udvar 15,6%, játéktér 13,3%, pihenőzóna 8,9%.'
+      };
+    }
+
+
+    const tasks = [createTask1(), createTask2(), createTask3(), createTask4()];
+
+    let currentTaskIndex = -1;
+    let currentTask = null;
+    let data = [];
+    let steps = [];
+    let counts = {};
+    let percentages = {};
+    let formatQuantity = value => formatInteger.format(value);
+    let initialAngleLabels = {};
+    let colorById = {};
+
+    let angleSpanMap = {};
+    let quantityLineMap = {};
+    let percentLineMap = {};
+    let infoEntries = [];
+    let slicesSelection = null;
+    let slicePaintState = new Map();
+
+    const stepMain = document.getElementById('step-main');
+    const stepLines = document.getElementById('step-lines');
+    let stepLineElements = [];
+    let currentStep = -1;
+    let legendEntryMap = new Map();
+    let layoutRequested = false;
+
+    const BASE_FONT_PT = 40;
+    const FONT_STEP_PT = 4;
+    const MIN_FONT_PT = 22;
+
+    const PT_TO_PX = 96 / 72;
+    const BASE_BOTTOM_PT = 50;
+    const LINE_GAP_PT = 10;
+    const EXTRA_GAP_PT = 10;
+    const FRACTION_GAP_LINES = 2;
+    const BASE_BOTTOM_PX = BASE_BOTTOM_PT * PT_TO_PX;
+    const LINE_GAP_PX = LINE_GAP_PT * PT_TO_PX;
+    const EXTRA_GAP_PX = EXTRA_GAP_PT * PT_TO_PX;
+    const ANIMATION_SMOOTHING = 0.2;
+    const ANIMATION_EPSILON = 0.4;
+
+    let lineAnimationStates = new Map();
+    let lineAnimationFrame = null;
+
+    ['task-theme-1','task-theme-2','task-theme-3','task-theme-4'].forEach(cls => body.classList.remove(cls));
+    taskTitle.textContent = '';
+
+    function requestNarrationLayout(immediate = false) {
+      if (immediate) {
+        layoutRequested = false;
+        layoutNarration();
+        return;
+      }
+      if (layoutRequested) {
+        return;
+      }
+      layoutRequested = true;
+      requestAnimationFrame(() => {
+        layoutRequested = false;
+        layoutNarration();
+      });
+    }
+
+    function ensureLineAnimation() {
+      if (!lineAnimationFrame) {
+        lineAnimationFrame = requestAnimationFrame(stepLineAnimations);
+      }
+    }
+
+    function computeLineGap(line, lineHeight) {
+      let gap = LINE_GAP_PX + (line.dataset.extraGap === 'true' ? EXTRA_GAP_PX : 0);
+      const heightForFraction = lineHeight ?? line.offsetHeight ?? 0;
+      if (line.dataset.fractionGap === 'true') {
+        gap += heightForFraction * FRACTION_GAP_LINES;
+      }
+      return gap;
+    }
+
+    function setLineTarget(line, targetTop) {
+      if (!line || !line.isConnected) {
+        return;
+      }
+      let state = lineAnimationStates.get(line);
+      let currentTop = state ? state.currentTop : parseFloat(line.dataset.currentTop);
+      if (!Number.isFinite(currentTop)) {
+        const fallback = stepLines.clientHeight || stepMain.clientHeight || 0;
+        currentTop = fallback + 80;
+      }
+      if (!state) {
+        state = { currentTop, targetTop };
+        lineAnimationStates.set(line, state);
+      } else {
+        state.targetTop = targetTop;
+      }
+      line.dataset.targetTop = `${targetTop}`;
+      ensureLineAnimation();
+    }
+
+    function stepLineAnimations() {
+      let shouldContinue = false;
+      lineAnimationStates.forEach((state, line) => {
+        if (!line || !line.isConnected) {
+          lineAnimationStates.delete(line);
+          return;
+        }
+        const diff = state.targetTop - state.currentTop;
+        if (Math.abs(diff) < ANIMATION_EPSILON) {
+          state.currentTop = state.targetTop;
+        } else {
+          state.currentTop += diff * ANIMATION_SMOOTHING;
+          shouldContinue = true;
+        }
+        line.style.top = `${state.currentTop}px`;
+        line.dataset.currentTop = `${state.currentTop}`;
+      });
+      if (shouldContinue) {
+        lineAnimationFrame = requestAnimationFrame(stepLineAnimations);
+      } else {
+        lineAnimationFrame = null;
+      }
+    }
+    function triggerLineEntrance(line) {
+      if (!line || !line.classList.contains('entering')) {
+        return;
+      }
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          line.classList.remove('entering');
+        });
+      });
+    }
+
+    function createNarrationLine(step, animate) {
+      const line = document.createElement('div');
+      line.className = 'step-line';
+      if (animate) {
+        line.classList.add('entering');
+      }
+      line.innerHTML = step.main;
+      line.style.width = '100%';
+      const plainText = (line.textContent || '').replace(/\s+/g, ' ').trim();
+      const containsMathMarkup = typeof step.main === 'string' && (step.main.includes('math-frac') || step.main.includes('math-expression'));
+      const needsExtraGap = Boolean(step.extraGap) || plainText.includes('=') || containsMathMarkup;
+      line.dataset.extraGap = needsExtraGap ? 'true' : 'false';
+      if (step.fractionGap) {
+        line.dataset.fractionGap = 'true';
+      }
+      if (step.centerLine) {
+        line.dataset.centerLine = 'true';
+        line.classList.add('center-line');
+      }
+      if (needsExtraGap) {
+        line.classList.add('extra-gap');
+      }
+      stepLines.appendChild(line);
+      const containerHeight = stepMain.clientHeight || stepLines.clientHeight || stepMain.getBoundingClientRect().height || 0;
+      const startTop = containerHeight + 80;
+      line.dataset.currentTop = `${startTop}`;
+      line.style.top = `${startTop}px`;
+      return line;
+    }
+
+    function syncNarration(maxIndex, animateNewest) {
+      if (maxIndex < 0) {
+        stepLineElements.forEach(line => {
+          if (line && line.isConnected) {
+            line.remove();
+          }
+        });
+        stepLineElements = [];
+        lineAnimationStates.clear();
+        if (lineAnimationFrame) {
+          cancelAnimationFrame(lineAnimationFrame);
+          lineAnimationFrame = null;
+        }
+        requestNarrationLayout(true);
+        return;
+      }
+
+      while (stepLineElements.length <= maxIndex) {
+        stepLineElements.push(null);
+      }
+
+      for (let i = 0; i <= maxIndex; i++) {
+        if (!stepLineElements[i]) {
+          stepLineElements[i] = createNarrationLine(steps[i], animateNewest && i === maxIndex);
+        }
+      }
+      requestNarrationLayout();
+    }
+
+    function layoutNarration() {
+      const entries = stepLineElements
+        .map((line, index) => ({ line, index }))
+        .filter(entry => entry.line && entry.line.isConnected);
+      const total = entries.length;
+      if (!total) {
+        return;
+      }
+
+      for (let i = 0; i < total; i++) {
+        const entry = entries[i];
+        const positionFromNewest = total - 1 - i;
+        const fontPt = Math.max(MIN_FONT_PT, BASE_FONT_PT - FONT_STEP_PT * positionFromNewest);
+        entry.line.style.fontSize = `${fontPt}pt`;
+        entry.line.classList.toggle('active', entry.index === currentStep);
+        entry.line.classList.toggle('extra-gap', entry.line.dataset.extraGap === 'true');
+      }
+
+      const containerHeight = stepMain.clientHeight || stepLines.clientHeight || stepMain.getBoundingClientRect().height || 0;
+      const activeIndex = entries.findIndex(entry => entry.index === currentStep);
+      const activeEntry = activeIndex !== -1 ? entries[activeIndex] : null;
+
+      if (activeEntry && activeEntry.line.dataset.centerLine === 'true') {
+        const activeLine = activeEntry.line;
+        const activeHeight = activeLine.offsetHeight;
+        const activeTop = Math.max(0, (containerHeight - activeHeight) / 2);
+        setLineTarget(activeLine, activeTop);
+        const activeGap = computeLineGap(activeLine, activeHeight);
+
+        let cursorAbove = activeTop - activeGap;
+        for (let i = activeIndex - 1; i >= 0; i--) {
+          const entry = entries[i];
+          const line = entry.line;
+          const lineHeight = line.offsetHeight;
+          const targetTop = cursorAbove - lineHeight;
+          setLineTarget(line, targetTop);
+          const gap = computeLineGap(line, lineHeight);
+          cursorAbove = targetTop - gap;
+        }
+
+        let cursorBelow = activeTop + activeHeight + activeGap;
+        for (let i = activeIndex + 1; i < total; i++) {
+          const entry = entries[i];
+          const line = entry.line;
+          const lineHeight = line.offsetHeight;
+          const targetTop = cursorBelow;
+          setLineTarget(line, targetTop);
+          const gap = computeLineGap(line, lineHeight);
+          cursorBelow = targetTop + lineHeight + gap;
+        }
+        return;
+      }
+
+      let cursor = containerHeight - BASE_BOTTOM_PX;
+
+      for (let i = total - 1; i >= 0; i--) {
+        const entry = entries[i];
+        const line = entry.line;
+        const lineHeight = line.offsetHeight;
+        const targetTop = cursor - lineHeight;
+        setLineTarget(line, targetTop);
+        const gap = computeLineGap(line, lineHeight);
+        cursor = targetTop - gap;
+      }
+    }
+    function buildInfoPanel() {
+      infoPanel.innerHTML = '';
+      angleSpanMap = {};
+      quantityLineMap = {};
+      percentLineMap = {};
+      infoEntries = data.map(item => {
+        const row = document.createElement('div');
+        row.className = 'info-item';
+        row.dataset.sliceId = item.id;
+        const marker = document.createElement('div');
+        marker.className = 'info-color';
+        marker.style.background = NEUTRAL_SLICE_COLOR;
+        const text = document.createElement('div');
+        text.className = 'info-text';
+        const heading = document.createElement('div');
+        heading.className = 'info-heading';
+        const angleSpan = document.createElement('span');
+        angleSpan.className = 'info-angle';
+        angleSpan.textContent = initialAngleLabels[item.id] ?? '?';
+        angleSpanMap[item.id] = angleSpan;
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'info-label';
+        labelSpan.textContent = item.detail;
+        heading.appendChild(angleSpan);
+        heading.appendChild(labelSpan);
+        const quantityLine = document.createElement('div');
+        quantityLine.className = 'info-quantity';
+        quantityLine.textContent = '—';
+        quantityLineMap[item.id] = quantityLine;
+        const percentLine = document.createElement('div');
+        percentLine.className = 'info-percent';
+        percentLine.textContent = '—';
+        percentLineMap[item.id] = percentLine;
+        text.appendChild(heading);
+        text.appendChild(quantityLine);
+        text.appendChild(percentLine);
+        row.appendChild(marker);
+        row.appendChild(text);
+        infoPanel.appendChild(row);
+        return { id: item.id, row, marker, color: item.color };
+      });
+    }
+
+    function buildLegends() {
+      legendEntryMap = new Map();
+      if (!legendLeft || !legendRight) {
+        return;
+      }
+      legendLeft.innerHTML = '';
+      legendRight.innerHTML = '';
+      const midpoint = Math.ceil(data.length / 2);
+      const columns = [
+        { container: legendLeft, items: data.slice(0, midpoint) },
+        { container: legendRight, items: data.slice(midpoint) }
+      ];
+      columns.forEach(column => {
+        column.items.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'legend-item';
+          row.dataset.sliceId = item.id;
+
+          const header = document.createElement('div');
+          header.className = 'legend-header';
+
+          const swatch = document.createElement('div');
+          swatch.className = 'legend-swatch';
+          swatch.style.background = item.color;
+
+          const label = document.createElement('div');
+          label.className = 'legend-label';
+          label.textContent = item.label;
+
+          header.appendChild(swatch);
+          header.appendChild(label);
+
+          const lines = document.createElement('div');
+          lines.className = 'legend-lines';
+
+          const angleLine = document.createElement('div');
+          angleLine.className = 'legend-line legend-line-angle';
+          angleLine.textContent = 'Fok: —';
+
+          const quantityLine = document.createElement('div');
+          quantityLine.className = 'legend-line legend-line-quantity';
+          quantityLine.textContent = 'Mennyiség: —';
+
+          const percentLine = document.createElement('div');
+          percentLine.className = 'legend-line legend-line-percent';
+          percentLine.textContent = 'Százalék: —';
+
+          lines.appendChild(angleLine);
+          lines.appendChild(quantityLine);
+          lines.appendChild(percentLine);
+
+          row.appendChild(header);
+          row.appendChild(lines);
+          column.container.appendChild(row);
+
+          legendEntryMap.set(item.id, {
+            row,
+            swatch,
+            color: item.color,
+            angle: angleLine,
+            quantity: quantityLine,
+            percent: percentLine
+          });
+        });
+      });
+    }
+
+    function buildChart() {
+      chartContainer.innerHTML = '';
+      const chartSize = 560;
+      const radius = 220;
+      const svg = d3.select(chartContainer)
+        .append('svg')
+        .attr('viewBox', `0 0 ${chartSize} ${chartSize}`)
+        .attr('width', '100%')
+        .attr('height', '100%');
+      const chartGroup = svg.append('g')
+        .attr('transform', `translate(${chartSize / 2}, ${(chartSize / 2) - 50})`);
+      const arc = d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius)
+        .cornerRadius(6);
+      const pie = d3.pie()
+        .sort(null)
+        .startAngle(-Math.PI / 2)
+        .endAngle(3 * Math.PI / 2)
+        .value(d => d.percent);
+      const arcs = pie(data);
+      slicePaintState = new Map();
+      data.forEach(item => slicePaintState.set(item.id, false));
+      slicesSelection = chartGroup.selectAll('.slice-path')
+        .data(arcs)
+        .enter()
+        .append('path')
+        .attr('class', 'slice-path')
+        .attr('fill', NEUTRAL_SLICE_COLOR)
+        .attr('d', d => arc({ ...d, endAngle: d.startAngle }))
+        .each(function(d) { this._current = d; });
+      slicesSelection.transition()
+        .duration(600)
+        .attrTween('d', function(d) {
+          const interpolate = d3.interpolate({ startAngle: d.startAngle, endAngle: d.startAngle }, d);
+          return function(t) {
+            return arc(interpolate(t));
+          };
+        });
+      resetSlicePaintState();
+    }
+
+    function resetSlicePaintState() {
+      if (!slicesSelection) {
+        slicePaintState = new Map();
+        return;
+      }
+      const freshState = new Map();
+      slicesSelection.each(function(d) {
+        freshState.set(d.data.id, false);
+      });
+      slicePaintState = freshState;
+      slicesSelection
+        .attr('fill', NEUTRAL_SLICE_COLOR)
+        .attr('stroke', 'none')
+        .attr('stroke-width', 0);
+      infoEntries.forEach(entry => {
+        if (entry.marker) {
+          entry.marker.style.background = NEUTRAL_SLICE_COLOR;
+        }
+      });
+      legendEntryMap.forEach(legendEntry => {
+        legendEntry.swatch.style.background = NEUTRAL_SLICE_COLOR;
+      });
+    }
+
+    function paintSlice(id) {
+      if (!slicesSelection) {
+        return;
+      }
+      if (!slicePaintState.has(id)) {
+        slicePaintState.set(id, false);
+      }
+      if (slicePaintState.get(id)) {
+        return;
+      }
+      slicePaintState.set(id, true);
+      slicesSelection
+        .filter(d => d.data.id === id)
+        .transition()
+        .duration(400)
+        .attr('fill', d => d.data.color)
+        .attr('stroke', 'none')
+        .attr('stroke-width', 0);
+      const infoEntry = infoEntries.find(entry => entry.id === id);
+      if (infoEntry && infoEntry.marker) {
+        infoEntry.marker.style.background = colorById[id] || infoEntry.color || NEUTRAL_SLICE_COLOR;
+      }
+      const legendEntry = legendEntryMap.get(id);
+      if (legendEntry) {
+        legendEntry.swatch.style.background = legendEntry.color;
+      }
+    }
+
+    function applyHighlight(focusId) {
+      if (!slicesSelection) {
+        return;
+      }
+      const focusIds = Array.isArray(focusId) ? focusId : (focusId ? [focusId] : []);
+      const paintedFocusIds = focusIds.filter(id => slicePaintState.get(id));
+      slicesSelection.each(function(d) {
+        const element = d3.select(this);
+        const isPainted = slicePaintState.get(d.data.id);
+        const isActive = paintedFocusIds.includes(d.data.id);
+        if (isPainted) {
+          element.classed('highlighted', isActive);
+          if (isActive) {
+            element.attr('stroke', d.data.color);
+            element.attr('stroke-width', 4);
+          } else {
+            element.attr('stroke', 'none');
+            element.attr('stroke-width', 0);
+          }
+        } else {
+          element.classed('highlighted', false);
+          element.attr('stroke', 'none');
+          element.attr('stroke-width', 0);
+          element.attr('fill', NEUTRAL_SLICE_COLOR);
+        }
+      });
+    }
+
+    function highlightInfo(focusId) {
+      const focusIds = Array.isArray(focusId) ? focusId : (focusId ? [focusId] : []);
+      infoEntries.forEach(entry => {
+        const isActive = focusIds.includes(entry.id);
+        entry.row.classList.toggle('active', isActive);
+      });
+      const paintedFocusIds = focusIds.filter(id => slicePaintState.get(id));
+      highlightLegend(paintedFocusIds, paintedFocusIds.length > 0);
+    }
+
+    function highlightLegend(focusIds, enabled) {
+      legendEntryMap.forEach((entry, id) => {
+        const isActive = enabled && focusIds.includes(id);
+        entry.row.classList.toggle('active', isActive);
+      });
+    }
+
+    function applyReveals(index) {
+      Object.entries(initialAngleLabels).forEach(([id, label]) => {
+        const angleNode = angleSpanMap[id];
+        if (angleNode) {
+          angleNode.textContent = label;
+        }
+      });
+      Object.values(quantityLineMap).forEach(line => {
+        line.textContent = '—';
+      });
+      Object.values(percentLineMap).forEach(line => {
+        line.textContent = '—';
+      });
+      legendEntryMap.forEach(entry => {
+        entry.angle.textContent = 'Fok: —';
+        entry.quantity.textContent = 'Mennyiség: —';
+        entry.percent.textContent = 'Százalék: —';
+      });
+      if (index < 0) {
+        resetSlicePaintState();
+        return;
+      }
+      for (let i = 0; i <= index; i++) {
+        const step = steps[i];
+        if (!step) {
+          continue;
+        }
+        if (step.revealAngles) {
+          Object.entries(step.revealAngles).forEach(([id, value]) => {
+            const angleNode = angleSpanMap[id];
+            if (angleNode) {
+              angleNode.textContent = value;
+            }
+            const legendEntry = legendEntryMap.get(id);
+            if (legendEntry) {
+              legendEntry.angle.textContent = `Fok: ${value}`;
+            }
+            paintSlice(id);
+          });
+        }
+        if (step.revealQuantities) {
+          Object.entries(step.revealQuantities).forEach(([id, value]) => {
+            const quantityNode = quantityLineMap[id];
+            if (quantityNode) {
+              quantityNode.textContent = formatQuantity(value);
+            }
+            const legendEntry = legendEntryMap.get(id);
+            if (legendEntry) {
+              legendEntry.quantity.textContent = `Mennyiség: ${formatQuantity(value)}`;
+            }
+          });
+        }
+        if (step.revealPercents) {
+          Object.entries(step.revealPercents).forEach(([id, value]) => {
+            const percentNode = percentLineMap[id];
+            if (percentNode) {
+              percentNode.textContent = value;
+            }
+            const legendEntry = legendEntryMap.get(id);
+            if (legendEntry) {
+              legendEntry.percent.textContent = `Százalék: ${value}`;
+            }
+          });
+        }
+      }
+      updateSliceColorsForStep(index);
+    }
+
+    function updateSummary(task) {
+      altTextNode.textContent = task.altText;
+      summaryHeader.innerHTML = '';
+      task.summary.columns.forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        summaryHeader.appendChild(th);
+      });
+      summaryBody.innerHTML = '';
+      task.summary.rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        summaryBody.appendChild(tr);
+      });
+    }
+
+    function resetNarration() {
+      stepLines.innerHTML = '';
+      stepLineElements = [];
+      currentStep = -1;
+      lineAnimationStates.clear();
+      if (lineAnimationFrame) {
+        cancelAnimationFrame(lineAnimationFrame);
+        lineAnimationFrame = null;
+      }
+      requestNarrationLayout(true);
+    }
+
+    function showStep(index, appended = false) {
+      const previousStep = currentStep;
+      currentStep = index;
+      if (index < 0) {
+        syncNarration(-1, false);
+        applyReveals(-1);
+        applyHighlight(null);
+        highlightInfo(null);
+        return;
+      }
+      const forward = previousStep === -1 || index > previousStep;
+      syncNarration(index, forward);
+      const line = stepLineElements[index];
+      if (appended && line) {
+        triggerLineEntrance(line);
+      }
+      requestNarrationLayout();
+      const step = steps[index];
+      applyReveals(index);
+      applyHighlight(step.focus);
+      highlightInfo(step.focus);
+    }
+
+    function showPanelsIfHidden() {
+      if (visual.classList.contains('concealed')) {
+        visual.classList.remove('concealed');
+        visual.setAttribute('aria-hidden', 'false');
+      }
+      if (infoPanel.classList.contains('concealed')) {
+        infoPanel.classList.remove('concealed');
+        infoPanel.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function goToStep(index, appended) {
+      showStep(index, appended);
+    }
+
+    function advanceStep(delta) {
+      if (!steps.length) {
+        if (delta > 0) {
+          if (currentTaskIndex === -1 && tasks.length) {
+            loadTask(0);
+            showPanelsIfHidden();
+            goToStep(0, true);
+          }
+        }
+        return;
+      }
+      if (currentStep === -1) {
+        if (delta > 0) {
+          showPanelsIfHidden();
+          goToStep(0, true);
+        }
+        return;
+      }
+
+      let nextIndex = currentStep + delta;
+
+      if (delta > 0 && nextIndex >= steps.length) {
+        if (currentTaskIndex < tasks.length - 1) {
+          loadTask(currentTaskIndex + 1);
+          if (steps.length) {
+            showPanelsIfHidden();
+            goToStep(0, true);
+          }
+        } else {
+          nextIndex = steps.length - 1;
+          if (nextIndex !== currentStep) {
+            showPanelsIfHidden();
+            goToStep(nextIndex, true);
+          }
+        }
+        return;
+      }
+
+      if (delta < 0 && nextIndex < 0) {
+        if (currentTaskIndex > 0) {
+          loadTask(currentTaskIndex - 1);
+          if (steps.length) {
+            showPanelsIfHidden();
+            const lastStepIndex = steps.length - 1;
+            goToStep(lastStepIndex, false);
+          }
+        }
+        return;
+      }
+
+      if (nextIndex < 0) {
+        nextIndex = 0;
+      } else if (nextIndex >= steps.length) {
+        nextIndex = steps.length - 1;
+      }
+
+      if (nextIndex !== currentStep) {
+        showPanelsIfHidden();
+        goToStep(nextIndex, delta > 0);
+      }
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        advanceStep(1);
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        advanceStep(-1);
+      }
+    });
+    function loadTask(index) {
+      currentTaskIndex = index;
+      currentTask = tasks[index];
+      taskTitle.textContent = currentTask.title;
+      ['task-theme-1','task-theme-2','task-theme-3','task-theme-4'].forEach(cls => body.classList.remove(cls));
+      body.classList.add(currentTask.themeClass);
+      data = currentTask.slices.map(slice => ({ ...slice }));
+      steps = currentTask.steps.map(step => ({ ...step }));
+      counts = currentTask.counts;
+      percentages = currentTask.percentages;
+      formatQuantity = currentTask.formatQuantity;
+      initialAngleLabels = Object.fromEntries(data.map(item => [item.id, item.display_angle]));
+      colorById = Object.fromEntries(data.map(item => [item.id, item.color]));
+      updateSummary(currentTask);
+      buildChart();
+      buildLegends();
+      buildInfoPanel();
+      resetNarration();
+      applyReveals(-1);
+      applyHighlight(null);
+      highlightInfo(null);
+      visual.classList.add('concealed');
+      visual.setAttribute('aria-hidden', 'true');
+      infoPanel.classList.add('concealed');
+      infoPanel.setAttribute('aria-hidden', 'true');
+    }
+
+    window.addEventListener('resize', () => {
+      if (currentStep >= 0) {
+        requestNarrationLayout(true);
+      }
+    });
+
+  </script>
+</body>
+</html>
