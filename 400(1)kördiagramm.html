@@ -113,7 +113,7 @@
       left: 0;
       right: 0;
       transform: translateY(0);
-      opacity: 0.62;
+      opacity: 1;
       transition:
         font-size 0.72s cubic-bezier(0.19, 1, 0.22, 1),
         opacity 0.55s ease,
@@ -125,9 +125,6 @@
       white-space: normal;
       word-break: keep-all;
       padding: 0;
-    }
-    .step-line.active {
-      opacity: 1;
     }
     .step-line.entering {
       opacity: 0;
@@ -192,12 +189,12 @@
     .slice-path {
       stroke: none;
       transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .slice-path.dimmed {
-      opacity: 0.25;
+      transform-origin: center;
+      transform-box: fill-box;
     }
     .slice-path.highlighted {
       opacity: 1;
+      transform: scale(1.02);
     }
     #info-panel {
       flex: 0 0 620px;
@@ -1158,10 +1155,6 @@
         return;
       }
       slicesSelection.classed('highlighted', d => focusIds.includes(d.data.id));
-      slicesSelection.classed('dimmed', d => focusIds.length && !focusIds.includes(d.data.id));
-      if (!focusIds.length) {
-        slicesSelection.classed('dimmed', false);
-      }
     }
 
     function highlightInfo(focusId) {
