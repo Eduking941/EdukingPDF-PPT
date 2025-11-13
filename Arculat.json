@@ -1,0 +1,121 @@
+{
+  "scope": "Eduking step-by-step math and data-visualization lessons",
+  "typography": {
+    "base_font_family": "Times New Roman, serif",
+    "text_color": "#ffffff",
+    "narration": {
+      "container_height_ratio": "~55% of viewport height",
+      "font_size": "40pt fixed",
+      "line_height": 1.1,
+      "letter_spacing": "0.02em",
+      "math_details_scale": "72% of parent narration line",
+      "math_details_highlight_colors": {
+        "title": "rgb(255, 215, 0)",
+        "result": "rgb(50, 205, 50)"
+      }
+    },
+    "calculation_panel": {
+      "heading_size": "12px",
+      "body_size": "24pt",
+      "group_spacing": "14px gaps"
+    }
+  },
+  "colors_and_background": {
+    "brand_background": "rgb(30, 30, 30)",
+    "text_shadow": "0 0 12px rgba(0, 0, 0, 0.7)",
+    "panel_background": "rgba(255, 255, 255, 0.08) overlays inside inset shadow containers",
+    "divider": {
+      "height": "4px",
+      "color": "#ffffff"
+    }
+  },
+  "layout": {
+    "page": {
+      "display": "flex column",
+      "min_height": "100vh",
+      "overflow": "hidden"
+    },
+    "top_section": {
+      "padding": "36px 72px 24px",
+      "flex_behavior": "column, space for narration bottom alignment",
+      "animation": "narration lines fade/slide in from below per arrow press"
+    },
+    "bottom_section": {
+      "height_ratio": "~45% of viewport",
+      "grid_template": "chart area (2.4fr) + side panel (2.6fr) with 32px gap",
+      "single_chart_mode": "switches to 1 column when only main chart is shown"
+    },
+    "chart_frame": {
+      "padding": "18px 22px 18px 18px",
+      "border_radius": "24px",
+      "box_shadow": "inset 0 0 32px rgba(0, 0, 0, 0.6)",
+      "svg_scaling": "absolute positioned, width/height 100%"
+    },
+    "pie_panel": {
+      "shared_container": "reuses side panel column, stacked with calculation panel",
+      "offset_from_divider": "~10px"
+    }
+  },
+  "navigation": {
+    "controls": "Hidden UI; narration advances solely through keyboard ArrowLeft/ArrowRight",
+    "restart": "Clicking the top region resets to the first step",
+    "line_reveal": "Each narration step stores sentences revealed sequentially via goForward/goBackward"
+  },
+  "chart_behaviour": {
+    "library": "D3 v7",
+    "bar_chart": {
+      "alignment": "left-aligned within chart frame",
+      "colors_match_pie": "bar fills use same palette as pie slices",
+      "guides": "dashed horizontal and vertical guides animate from axes to highlighted bar"
+    },
+    "pie_chart": {
+      "usage": "drawn alongside bar chart when pieReveal flag is true",
+      "slice_build": "slices accumulate step-by-step and highlight current angle",
+      "opacity_transition": "0 -> 1 over 0.6s"
+    },
+    "line_charts": {
+      "multi_series": "supports three colored series with legends and highlighted points",
+      "timeline_mode": "secondary view lists all measurements chronologically with shared palette",
+      "guides": "dashed horizontal + vertical lines animate from axes to active point"
+    }
+  },
+  "content_structure": {
+    "step_design": "Every lesson is an ordered array of steps with narration lines, math details, highlight instructions, and calculation panel entries.",
+    "visibility_rules": "Narration above divider, visuals below; pie and timeline panels toggle per step to avoid scroll.",
+    "spacing_strategy": "If a step would overflow, split into multiple steps rather than shrinking text."
+  },
+  "color_palette": {
+    "bars_and_pie": [
+      "#FF6B6B",
+      "#FFD93D",
+      "#6BCB77",
+      "#4D96FF",
+      "#C77DFF",
+      "#FF8FB1",
+      "#F5B700"
+    ],
+    "line_series": {
+      "morning": "#FF8C42",
+      "afternoon": "#00B5D8",
+      "evening": "#B15EFF"
+    },
+    "finance_series": {
+      "price": "#58D68D",
+      "moving_average": "#F4D03F"
+    },
+    "physics_series": {
+      "baseline": "#FF6F91",
+      "peak": "#736CED"
+    },
+    "emissions_series": {
+      "transport": "#F79D65",
+      "industry": "#5BC0EB",
+      "households": "#9BC53D"
+    }
+  },
+  "accessibility": {
+    "contrast": "Light text on dark background with shadowed narration improves readability.",
+    "keyboard": "Arrow keys for navigation; focus kept on body to capture key events.",
+    "no_scroll": "All content fits within viewport via grid sizing and step splitting."
+  }
+}
