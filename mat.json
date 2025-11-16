@@ -1,0 +1,44 @@
+{
+  "lesson": "401(1)oszlopdiagramm.html",
+  "additional_lessons": [
+    "402(1)grafikon.html",
+    "403(1)koordinata.html"
+  ],
+  "math_rendering": {
+    "library": {
+      "name": "MathJax",
+      "version": 3,
+      "config": "tex-svg",
+      "script_source": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    },
+    "initialization": {
+      "queue_setup": "setupMathJax() registers MathJax.startup.promise.then(markMathReady) and flushes deferred nodes via flushMathQueue().",
+      "typesetting": "queueTypeset(node) calls MathJax.typesetPromise([node]) once mathJaxReady is true; nodes added before readiness are stored in mathQueue and typeset later."
+    },
+    "markup_patterns": {
+      "inline_math": "All mathematical expressions are written in TeX notation using inline delimiters \\(...\\). Because the strings live inside JavaScript template literals or quoted strings, each backslash is escaped (e.g. \\\\frac{120}{810}).",
+      "structures": [
+        "Fractions are expressed with \\frac{numerator}{denominator} and, when needed, chains like \\frac{120}{810} = \\frac{12}{81} = \\frac{4}{27}.",
+        "Percent conversions use multiplication dots \\cdot and escaped percent signs (e.g. \\cdot 100\\%).",
+        "Temperature readings present degrees as \\( 24{,}0^{\\circ}\\mathrm{C} \\), placing the degree markup (^{\\circ}\\mathrm{C}) directly after the value to render the symbol and unit correctly.",
+        "Thousands separators inside TeX use thin spaces with escaped commas (e.g. 12\\,000).",
+        "All locale-formatted numbers are normalised by splitting the locale string at the decimal comma, reassembling it with {,}, and converting non-breaking, thin, or regular spaces into TeX thin spaces (\\,) via toTex().",
+        "Decimal commas are written as literal text inside TeX groups (e.g. 14{,}81\\%).",
+        "A százalékszámításoknál a percentProductOperandsTex tárolja az n \\cdot 100 szorzatot, míg a percentProductTex a kiszámolt számlálót adja vissza; a körcikkeknél a 360 \\cdot n szorzat eredményét degreeProductTex néven jelenítjük meg.",
+        "Az osztás utáni eredményt toTexFixed() alakítja TeX formára: előbb öt tizedesre kerekítünk, a fölös nullákat levágjuk, majd vesszőre cseréljük a pontot, így a narrációban \\frac{n}{\\text{összeg}} \\cdot 100\\% = 14{,}81481\\% \\approx 14{,}81\\% szerkezet jelenik meg.",
+        "Currency values appear as \\( 8\\,200\\,\\mathrm{Ft} \\) style expressions inside the financial lesson, using the same decimal normalisation and thin-space thousands separators.",
+        "Electrical power readings display watts as \\( 420\\,\\mathrm{W} \\) or difference forms such as \\( 500 - 210 = 290\\,\\mathrm{W} \\).",
+        "Szén-dioxid-kibocsátási értékek millió tonnában jelennek meg, például \\( 11{,}5\\,\\mathrm{Mt} \\) és \\( 18{,}1 - 16{,}0 = 2{,}1\\,\\mathrm{Mt} \\).",
+        "Koordináta-geometriai feladatokban az osztást kettősponttal írjuk (pl. \\((8 \\cdot 4) : 2\\)), a törtek és gyökvonások továbbra is \\frac{}{} és \\sqrt{} formában jelennek meg."
+      ],
+      "math_details": "Narration steps embed <div class=\"math-details\"> blocks containing titled substeps; MathJax formats the inline TeX within these blocks after queueTypeset().",
+      "calc_panel": "The calculation sidebar reuses the same inline TeX strings, relying on queueTypeset(calcContent) for rendering."
+    },
+    "interaction": {
+      "narration_update": "resetNarration(stepIndex, shown) rebuilds the narration HTML for the active step and enqueues MathJax on the new wrappers.",
+      "calculation_update": "renderCalc(step) fills #calc-lines with the TeX strings for the current scenario and queues MathJax on that container.",
+      "step_navigation": "Keyboard arrow events trigger goForward/goBackward, which call revealNextLine or loadStep and ensure each new math block is typeset."
+    },
+    "error_handling": "MathJax readiness is tracked via mathJaxReady; typesetting is retried on window load if the startup promise was not yet resolved."
+  }
+}
